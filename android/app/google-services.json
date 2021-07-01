@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "896174307154",
+    "project_id": "kakaoo-a1e57",
+    "storage_bucket": "kakaoo-a1e57.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:896174307154:android:cfd078573f54cb73c72c8b",
+        "android_client_info": {
+          "package_name": "com.example.kakaoo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "896174307154-6li92nes3n7vro38gkn0g3j4kdoahvil.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuUmHanJYDJbzYC9YL7x0-_iE5seBRIbs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "896174307154-6li92nes3n7vro38gkn0g3j4kdoahvil.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
