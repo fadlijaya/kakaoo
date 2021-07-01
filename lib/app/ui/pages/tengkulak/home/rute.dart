@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' show cos, sqrt, asin;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +27,7 @@ Map<PolylineId, Polyline> polylines = {};
 class _RuteState extends State<Rute> {
   final String _googleApiKey = "AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg";
   var _currentPosition;
+  // ignore: unused_field
   var _currentAddress;
   var _originLatitude;
   var _originLongitude;
