@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">896174307154-6li92nes3n7vro38gkn0g3j4kdoahvil.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">896174307154</string>
+    <string name="google_api_key" translatable="false">AIzaSyDuUmHanJYDJbzYC9YL7x0-_iE5seBRIbs</string>
+    <string name="google_app_id" translatable="false">1:896174307154:android:cfd078573f54cb73c72c8b</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyDuUmHanJYDJbzYC9YL7x0-_iE5seBRIbs</string>
+    <string name="google_storage_bucket" translatable="false">kakaoo-a1e57.appspot.com</string>
+    <string name="project_id" translatable="false">kakaoo-a1e57</string>
+</resources>

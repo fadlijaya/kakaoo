@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:kakaoo/app/ui/pages/constants.dart';
-import 'package:kakaoo/app/ui/pages/user_login.dart';
-// ignore: import_of_legacy_library_into_null_safe
-import 'package:splashscreen/splashscreen.dart';
+import 'package:kakaoo/app/ui/admin/pages/dashboard.dart';
+import 'package:kakaoo/app/ui/admin/pages/orders.dart';
+import 'package:kakaoo/app/ui/constants.dart';
+import 'package:kakaoo/app/ui/petani/login.dart';
+import 'package:kakaoo/app/ui/tengkulak/login.dart';
+import 'package:kakaoo/app/ui/user_login.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:splash_screen_view/SplashScreenView.dart';
 
-import 'app/ui/pages/petani/home/home.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,14 +19,21 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final newTextTheme = Theme.of(context).textTheme.apply(
+        bodyColor: AppColor().colorChocolate,
+        displayColor: AppColor().colorChocolate);
     return MaterialApp(
       title: 'Kakaoo',
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/home' : (context) => Home()
+        '/loginPetani': (_) => LoginPetani(),
+        '/dashboard': (_) => Admin(),
+        '/orders': (_) => Orders(),
+        '/loginTengkulak': (_) => LoginTengkulak(),
       },
       theme: ThemeData(
+          textTheme: newTextTheme,
           primaryColor: AppColor().colorCreamy,
           primarySwatch: Colors.brown,
           inputDecorationTheme: InputDecorationTheme(
@@ -44,13 +53,13 @@ class MySplash extends StatefulWidget {
 class _MySplashState extends State<MySplash> {
   @override
   Widget build(BuildContext context) {
-    return SplashScreen(
-      seconds: 3,
-      backgroundColor: AppColor().colorCreamy,
-      image: Image.asset('assets/logo_png.png'),
-      photoSize: 100.0,
-      loaderColor: AppColor().colorCreamy,
-      navigateAfterSeconds: UserLogin(),
-    );
+    return SplashScreenView(
+        imageSrc: 'assets/logo.png',
+        imageSize: 160,
+        text: 'Kakaoo',
+        textStyle: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
+        backgroundColor: AppColor().colorCreamy,
+        duration: 3000,
+        navigateRoute: UserLogin());
   }
 }
