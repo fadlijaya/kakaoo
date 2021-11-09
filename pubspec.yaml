@@ -27,6 +27,7 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   carousel_slider: ^4.0.0
   map_picker: ^0.0.3
+  provider: ^5.0.0
   
   flutter_svg: ^0.22.0
   cupertino_icons: ^1.0.2
@@ -40,6 +41,7 @@ flutter:
 
   assets:
     - assets/location_icon.svg
+    - assets/success.svg
     - assets/logo.png
     - assets/slider1.png
     - assets/slider2.png

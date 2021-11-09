@@ -10,9 +10,10 @@ import 'package:kakaoo/app/ui/tengkulak/pages/pesanan.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/rute.dart';
 
 class Detail extends StatefulWidget {
+  final String tengkulakAddress;
   final String docIdProduct;
   final String typeUsers;
-  final String userName;
+  final String fullname;
   final String phoneNumber;
   final String location;
   final String unit;
@@ -26,9 +27,10 @@ class Detail extends StatefulWidget {
 
   const Detail({
     Key? key,
+    required this.tengkulakAddress,
     required this.docIdProduct,
     required this.typeUsers,
-    required this.userName,
+    required this.fullname,
     required this.phoneNumber,
     required this.location,
     required this.unit,
@@ -251,7 +253,7 @@ class _DetailState extends State<Detail> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => LihatProfil(
-                                            userName: widget.userName,
+                                            fullname: widget.fullname,
                                             location: widget.location,
                                             phoneNumber: widget.phoneNumber,
                                           ))),
@@ -263,7 +265,7 @@ class _DetailState extends State<Detail> {
                                     color: Colors.grey,
                                   ),
                                   title: Text(
-                                    widget.userName,
+                                    widget.fullname,
                                     style: TextStyle(fontSize: 14.0),
                                   ),
                                   subtitle: Text('LIHAT PROFIL',
@@ -352,6 +354,7 @@ class _DetailState extends State<Detail> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => Rute(
+                                      tengkulakAddress: widget.tengkulakAddress,
                                       location: widget.location,
                                       coordinate: widget.coordinate))),
                           child: Container(

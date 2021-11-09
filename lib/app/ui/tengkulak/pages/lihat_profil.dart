@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 
 class LihatProfil extends StatefulWidget {
-  final String userName;
+  final String fullname;
   final String location;
   final String phoneNumber;
 
   const LihatProfil({
     Key? key,
-    required this.userName,
+    required this.fullname,
     required this.location,
     required this.phoneNumber,
   }) : super(key: key);
@@ -52,7 +52,7 @@ class _LihatProfilState extends State<LihatProfil> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.userName,
+                    widget.fullname,
                     style: TextStyle(
                         color: AppColor().colorChocolate,
                         fontWeight: FontWeight.w500,

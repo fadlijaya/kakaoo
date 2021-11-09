@@ -41,10 +41,11 @@ class CustomSearchDelegate extends SearchDelegate {
       children: [
         Expanded(
           child: StreamBuilder(
-              stream:
-                  FirebaseFirestore.instance.collection('penjualan').snapshots(),
-              builder:
-                  (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              stream: FirebaseFirestore.instance
+                  .collection('penjualan')
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -58,16 +59,17 @@ class CustomSearchDelegate extends SearchDelegate {
                   return ListView(
                       children: snapshot.data!.docs.map((DocumentSnapshot doc) {
                     var title = doc['judul'];
-        
+
                     return ListTile(
-                      onTap: (){
-                         Navigator.push(
+                      onTap: () {
+                        Navigator.push(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Detail(
+                                    tengkulakAddress: '',
                                     docIdProduct: doc['docIdProduct'],
                                     typeUsers: doc['jenis pengguna'],
-                                    userName: doc['nama lengkap'],
+                                    fullname: doc['nama lengkap'],
                                     phoneNumber: doc['nomor HP'],
                                     location: doc['alamat'],
                                     unit: doc['satuan'],

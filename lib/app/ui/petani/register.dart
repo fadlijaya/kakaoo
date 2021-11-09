@@ -2,7 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
+// ignore: implementation_imports
+import 'package:provider/src/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -22,8 +25,8 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  TextEditingController _fullName = TextEditingController();
   TextEditingController _userName = TextEditingController();
+  TextEditingController _username = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
@@ -71,7 +74,7 @@ class _RegisterState extends State<Register> {
                             'Daftar',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
+                              fontSize: 24.0,
                             ),
                           ),
                           SizedBox(
@@ -93,7 +96,7 @@ class _RegisterState extends State<Register> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: paddingDefault),
                             child: TextFormField(
-                              controller: _fullName,
+                              controller: _userName,
                               textInputAction: TextInputAction.next,
                               onEditingComplete: () => node.nextFocus(),
                               decoration:
@@ -110,13 +113,13 @@ class _RegisterState extends State<Register> {
                                 horizontal: paddingDefault),
                             child: TextFormField(
                               textInputAction: TextInputAction.next,
-                              controller: _userName,
+                              controller: _username,
                               onEditingComplete: () => node.nextFocus(),
                               decoration:
-                                  InputDecoration(labelText: 'Nama Pengguna'),
+                                  InputDecoration(labelText: 'Username'),
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return 'Masukkan Nama Pengguna';
+                                  return 'Masukkan Username';
                                 }
                               },
                             ),
@@ -126,6 +129,7 @@ class _RegisterState extends State<Register> {
                                 horizontal: paddingDefault),
                             child: TextFormField(
                               textInputAction: TextInputAction.next,
+                              keyboardType: TextInputType.emailAddress,
                               controller: _email,
                               onEditingComplete: () => node.nextFocus(),
                               decoration: InputDecoration(labelText: 'Email'),
@@ -139,22 +143,6 @@ class _RegisterState extends State<Register> {
                             ),
                           ),
                           SizedBox(height: 8),
-                          /*_location != null
-                                  ? Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text("Alamat", style: TextStyle(fontSize: 12, color: Colors.black45)),
-                                      Text(_location.toString()),
-                                    ],
-                                  )
-                                  : TextButton(
-                                      onPressed: () => getCurrentLocation(),
-                                      child: Text(
-                                        'Masukkan Alamat',
-                                        style: TextStyle(
-                                            color: Colors.black26, fontSize: 16),
-                                      )),
-                              Divider(thickness: 1, color: Colors.black45,),*/
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: paddingDefault),
@@ -222,7 +210,63 @@ class _RegisterState extends State<Register> {
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
-                          await register();
+                           final String fullname = _userName.text.trim();
+                            final String username = _username.text.trim();
+                            final String email = _email.text.trim();
+                            final String password = _password.text.trim();
+                            final String phoneNumber = widget.phoneNumber;
+                            try {
+                              if (email.isEmpty) {
+                                print('Email is empty');
+                              } else if (password.isEmpty) {
+                                print('Password is empty');
+                              } else {
+                                context
+                                    .read<AuthService>()
+                                    .signUp(fullname, username, email, password,
+                                        phoneNumber, title)
+                                    .then((value) async {
+                                  User? user =
+                                      FirebaseAuth.instance.currentUser;
+
+                                  await firestore
+                                      .collection('petani')
+                                      .doc(user!.uid)
+                                      .set({
+                                    'userId': user.uid,
+                                    'nama lengkap': fullname,
+                                    'nama pengguna': username,
+                                    'email': email,
+                                    'password': password,
+                                    'nomor HP': phoneNumber,
+                                    'jenis pengguna': title,
+                                  });
+
+                                  await firestore
+                                      .collection('users')
+                                      .doc(user.uid)
+                                      .set({
+                                    'userId': user.uid,
+                                    'nama lengkap': fullname,
+                                    'nama pengguna': username,
+                                    'email': email,
+                                    'password': password,
+                                    'nomor HP': phoneNumber,
+                                    'jenis pengguna': title,
+                                  });
+
+                                  successDialog();
+                                });
+                              }
+                            } on FirebaseAuthException catch (e) {
+                              if (e.code == 'week-password') {
+                                print('The password provided is too week');
+                              } else if (e.code == 'email-already-in-use') {
+                                displaySnackbar();
+                              }
+                            } catch (e) {
+                              print(e);
+                            }
                         },
                         color: AppColor().colorCreamy,
                         child: Center(
@@ -239,52 +283,6 @@ class _RegisterState extends State<Register> {
         )),
       ),
     );
-  }
-
-  Future register() async {
-    if (_formKey.currentState!.validate()) {
-      try {
-        UserCredential userCredential =
-            await auth.createUserWithEmailAndPassword(
-                email: _email.text, password: _password.text);
-
-        // ignore: unnecessary_null_comparison
-        if (userCredential != null) {
-          await FirebaseFirestore.instance
-              .collection('petani')
-              .doc(auth.currentUser!.uid)
-              .set({
-            'userId': auth.currentUser!.uid,
-            'jenis pengguna': title,
-            'nama lengkap': _userName.text.trim(),
-            'email': _email.text.trim(),
-            'password': _password.text.trim(),
-            'nomor HP': widget.phoneNumber
-          });
-
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(auth.currentUser!.uid)
-              .set({
-            'userId': auth.currentUser!.uid,
-            'jenis pengguna': title,
-            'nama lengkap': _userName.text.trim(),
-            'email': _email.text.trim(),
-            'password': _password.text.trim(),
-            'nomor HP': widget.phoneNumber
-          });
-          successDialog();
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          print('The password provided is too week');
-        } else if (e.code == 'email-already-in-use') {
-          displaySnackbar();
-        }
-      } catch (e) {
-        print(e);
-      }
-    }
   }
 
   displaySnackbar() {

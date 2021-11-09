@@ -47,10 +47,9 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
   }
 
   Future getUser() async {
-    if (auth.currentUser != null) {
-      await firestore
+    await firestore
           .collection('admin')
-          .where('nama lengkap')
+          .where('userId')
           .get()
           .then((result) {
         if (result.docs.length > 0) {
@@ -59,7 +58,6 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
           });
         }
       });
-    }
   }
 
   @override

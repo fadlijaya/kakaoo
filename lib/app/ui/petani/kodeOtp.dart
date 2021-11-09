@@ -77,13 +77,13 @@ class _KodeOtpState extends State<KodeOtp> {
                             'Daftar',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20.0,
+                              fontSize: 24.0,
                             ),
                           ),
                           SizedBox(
                             height: 12.0,
                           ),
-                          Text('Lengkapi data dirimu di bawah ini, ya'),
+                          Text('Masukkan Nomor HP kamu yang Aktif'),
                           SizedBox(
                             height: 44.0,
                           ),
@@ -98,19 +98,30 @@ class _KodeOtpState extends State<KodeOtp> {
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: paddingDefault),
-                            child: TextFormField(
-                              keyboardType: TextInputType.phone,
-                              textInputAction: TextInputAction.next,
-                              onEditingComplete: () => node.nextFocus(),
-                              controller: _phoneNumber,
-                              decoration: InputDecoration(
-                                labelText: 'Nomor HP',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Masukkan Nomor HP';
-                                }
-                              },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Nomor HP',
+                                  style: TextStyle(
+                                      color: Colors.black54, fontSize: 12),
+                                ),
+                                TextFormField(
+                                  keyboardType: TextInputType.phone,
+                                  textInputAction: TextInputAction.next,
+                                  onEditingComplete: () => node.nextFocus(),
+                                  controller: _phoneNumber,
+                                  decoration: InputDecoration(
+                                      hintText: 'Cth:081xxxxxx'),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Masukkan Nomor HP';
+                                    } else if (value.length < 12) {
+                                      return 'Nomor Salah';
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ),
                           SizedBox(height: 8),
@@ -233,8 +244,9 @@ class _KodeOtpState extends State<KodeOtp> {
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             Register(
-                                                              phoneNumber: _phoneNumber.text
-                                                            )),
+                                                                phoneNumber:
+                                                                    _phoneNumber
+                                                                        .text)),
                                                     (route) => false)
                                               })
                                           // ignore: invalid_return_type_for_catch_error
@@ -342,9 +354,8 @@ class _KodeOtpState extends State<KodeOtp> {
             .then((value) => Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(
-                    builder: (BuildContext context) => Register(
-                      phoneNumber: _phoneNumber.text
-                    ),
+                    builder: (BuildContext context) =>
+                        Register(phoneNumber: _phoneNumber.text),
                   ),
                   (route) => false,
                 ));

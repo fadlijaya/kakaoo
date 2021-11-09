@@ -13,6 +13,7 @@ class EditProfil extends StatefulWidget {
   final String address;
   final String phoneNumber;
   final String fullName;
+  final String username;
   final String password;
   const EditProfil(
       {Key? key,
@@ -22,6 +23,7 @@ class EditProfil extends StatefulWidget {
       this.address = '',
       this.phoneNumber = '',
       this.fullName = '',
+      this.username = '',
       required this.password})
       : super(key: key);
 
@@ -33,6 +35,7 @@ class _EditProfilState extends State<EditProfil> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController _fullName = TextEditingController();
+  TextEditingController _username = TextEditingController();
   TextEditingController _email = TextEditingController();
   TextEditingController _phoneNumber = TextEditingController();
   TextEditingController _address = TextEditingController();
@@ -43,6 +46,7 @@ class _EditProfilState extends State<EditProfil> {
   void initState() {
     if (widget.isEdit) {
       _fullName.text = widget.fullName;
+      _username.text = widget.username;
       _address.text = widget.address;
       _email.text = widget.email;
       _phoneNumber.text = widget.phoneNumber;
@@ -111,6 +115,19 @@ class _EditProfilState extends State<EditProfil> {
                 },
               ),
               TextFormField(
+                controller: _username,
+                textInputAction: TextInputAction.next,
+                onEditingComplete: () => node.nextFocus(),
+                decoration: InputDecoration(
+                  labelText: 'Nama Pengguna',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Masukkan Nama Pengguna';
+                  }
+                },
+              ),
+              TextFormField(
                 keyboardType: TextInputType.name,
                 textInputAction: TextInputAction.next,
                 controller: _email,
@@ -169,6 +186,7 @@ class _EditProfilState extends State<EditProfil> {
             docRef,
             <String, dynamic>{
               'nama lengkap': _fullName.text,
+              'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
               'alamat': _address.text,
               'email': _email.text

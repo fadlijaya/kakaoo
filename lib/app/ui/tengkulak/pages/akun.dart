@@ -6,7 +6,7 @@ import 'package:kakaoo/app/ui/user_login.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-var userName;
+var fullname;
 var phoneNumber;
 var email;
 
@@ -34,7 +34,7 @@ class _AkunState extends State<Akun> {
           .then((result) {
         if (result.docs.length > 0) {
           setState(() {
-            userName = result.docs[0].data()['nama lengkap'];
+            fullname = result.docs[0].data()['nama lengkap'];
             phoneNumber = result.docs[0].data()['nomor HP'];
             email = result.docs[0].data()['email'];
           });
@@ -100,7 +100,7 @@ class _AkunState extends State<Akun> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "$userName",
+                    "$fullname",
                     style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w500,

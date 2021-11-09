@@ -8,6 +8,7 @@ import 'package:kakaoo/app/ui/petani/pages/akun/pengaturan/pengaturan.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 var fullName;
+var username;
 var email;
 var password;
 var phoneNumber;
@@ -37,6 +38,7 @@ class _AkunState extends State<Akun> {
       if (result.docs.length > 0) {
         setState(() {
           fullName = result.docs[0].data()['nama lengkap'];
+          username = result.docs[0].data()['nama pengguna'];
           email = result.docs[0].data()['email'];
           password = result.docs[0].data()['password'];
           phoneNumber = result.docs[0].data()['nomor HP'];
@@ -99,6 +101,7 @@ class _AkunState extends State<Akun> {
                                       isEdit: true,
                                       documentId: auth.currentUser!.uid,
                                       fullName: fullName,
+                                      username: username,
                                       phoneNumber: phoneNumber,
                                       email: email,
                                       password: password,

@@ -20,7 +20,12 @@ List<T> map<T>(List list, Function handler) {
 
 int _currentIndex = 0;
 
-final FirebaseAuth auth = FirebaseAuth.instance;
+User? user = FirebaseAuth.instance.currentUser;
+final Stream<QuerySnapshot> listProduct = FirebaseFirestore.instance
+    .collection('petani')
+    .doc(user!.uid)
+    .collection('penjualan')
+    .snapshots();
 
 class Kakao extends StatefulWidget {
   const Kakao({
@@ -42,12 +47,6 @@ class _KakaoState extends State<Kakao> {
   }
 
   widgetListData() {
-    final Stream<QuerySnapshot> listProduct = FirebaseFirestore.instance
-        .collection('petani')
-        .doc(auth.currentUser!.uid)
-        .collection('penjualan')
-        .snapshots();
-
     return Container(
         padding: EdgeInsets.only(top: paddingDefault, bottom: paddingDefault),
         child: Column(

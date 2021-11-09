@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kakaoo/app/services/auth_services.dart';
+import 'package:kakaoo/app/ui/admin/pages/dashboard.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/tengkulak/kodeOtp.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/home.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
+import 'package:provider/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-var username;
-var password;
 
 class LoginTengkulak extends StatefulWidget {
   @override
@@ -20,7 +21,7 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  TextEditingController _email = TextEditingController();
+  TextEditingController _username = TextEditingController();
   TextEditingController _password = TextEditingController();
 
   var isLoading = false;
@@ -79,7 +80,7 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                   Text(
                     'Masuk',
                     style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                        TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(
                     height: 12.0,
@@ -96,13 +97,11 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     TextFormField(
-                      controller: _email,
-                      decoration: InputDecoration(hintText: 'Email'),
+                      controller: _username,
+                      decoration: InputDecoration(hintText: 'Username'),
                       validator: (value) {
                         if (value!.isEmpty) {
-                          return 'Email Tidak Boleh Kosong !';
-                        } else if (!value.contains('@')) {
-                          return 'Email Salah';
+                          return 'Username Tidak Boleh Kosong !';
                         }
                       },
                     ),
@@ -145,7 +144,61 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                           if (!isLoading) {
                             if (_formKey.currentState!.validate()) {
                               displaySnackBar('Mohon Tunggu..');
-                              await login();
+
+                              final String username = _username.text.trim();
+                              final String password = _password.text.trim();
+
+                              if (username.isEmpty) {
+                                print("Username is empty");
+                              } else if (password.isEmpty) {
+                                print("Password is empty");
+                              } else {
+                                if (username == 'muhtakdir' &&
+                                    password == '1234567') {
+                                  QuerySnapshot snapshot =
+                                      await FirebaseFirestore.instance
+                                          .collection('admin')
+                                          .where('nama pengguna',
+                                              isEqualTo: username)
+                                          .get();
+
+                                  context.read<AuthService>().login(
+                                      snapshot.docs[0]['email'], password);
+
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          Admin(),
+                                    ),
+                                    (route) => false,
+                                  );
+                                } else {
+                                  QuerySnapshot snapshot =
+                                      await FirebaseFirestore.instance
+                                          .collection('tengkulak')
+                                          .where('nama pengguna',
+                                              isEqualTo: username)
+                                          .get();
+
+                                  if (snapshot.docs.isEmpty) {
+                                    displaySnackBar(
+                                        'Username dan Password Salah');
+                                  } else {
+                                    context.read<AuthService>().login(
+                                        snapshot.docs[0]['email'], password);
+
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            HomeTengkulak(),
+                                      ),
+                                      (route) => false,
+                                    );
+                                  }
+                                }
+                              }
                             }
                           }
                         },
@@ -195,40 +248,5 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
 
   displaySnackBar(text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  }
-
-  Future login() async {
-    try {
-      UserCredential userCredential = await auth.signInWithEmailAndPassword(
-          email: _email.text, password: _password.text);
-
-      // ignore: unnecessary_null_comparison
-      if (userCredential != null) {
-        await firestore
-            .collection('tengkulak')
-            .where('userId', isEqualTo: auth.currentUser!.uid)
-            .get()
-            .then((result) {
-          // ignore: unnecessary_null_comparison
-          if (result != null) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => HomeTengkulak(),
-              ),
-              (route) => false,
-            );
-          }
-        });
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == "user-not-found") {
-        displaySnackBar('Email Tidak Ditemukan, Silahkan Daftar!');
-      } else if (e.code == "week-password") {
-        displaySnackBar('Email atau Password Salah!');
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 }

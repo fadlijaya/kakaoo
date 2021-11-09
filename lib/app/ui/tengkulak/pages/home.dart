@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoding/geocoding.dart';
@@ -84,7 +86,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                   width: 260.0,
                   height: 48.0,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(right: 12),
@@ -96,6 +98,13 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                       SizedBox(
                         width: 4.0,
                       ),
+                      Text(
+                        'Cari',
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black54),
+                      )
                     ],
                   ),
                 ),
@@ -114,22 +123,72 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
             ],
           ),
           SizedBox(
-            height: 16.0,
+            height: 24.0,
           ),
-          Text('Produk Terbaru',
-              style: TextStyle(
-                color: AppColor().colorChocolate,
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-              )),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Daftar Produk',
+                  style: TextStyle(
+                    color: AppColor().colorChocolate,
+                    fontSize: 24.0,
+                    fontWeight: FontWeight.bold,
+                  )),
+              IconButton(
+                  onPressed: () {
+                    filterBottomSheet();
+                  },
+                  icon: Icon(Icons.tune,
+                      size: 30, color: AppColor().colorChocolate))
+            ],
+          ),
         ],
       ),
     );
   }
 
+  filterBottomSheet() {
+    return showModalBottomSheet(
+        context: context,
+        builder: (context) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {},
+                child: Padding(
+                  padding: const EdgeInsets.all(paddingDefault),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Icon(Icons.filter_alt),
+                      SizedBox(
+                        width: 16,
+                      ),
+                      Text(
+                        'Urut Berdasarkan Jarak Terdekat',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+              )
+            ],
+          );
+        });
+  }
+
+  String? _calculateDistance;
+
+  double _coordinateDistance(lat2, lon2) {
+    double d = 111.322;
+    return sqrt(pow(lat2 - _currentPosition.latitude, 2) +
+            pow(lon2 - _currentPosition.longitude, 2)) * d;
+  }
+
   widgetListData() {
     return Container(
-      margin: EdgeInsets.only(top: 150.0),
+      margin: EdgeInsets.only(top: 160.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -156,13 +215,18 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                     children:
                         snapshot.data!.docs.map((DocumentSnapshot document) {
                   final int harga = int.parse(document['harga']);
+                  final GeoPoint destLatLong = document['posisi kordinat'];
+
+                  _calculateDistance = _coordinateDistance(
+                          destLatLong.latitude, destLatLong.longitude)
+                      .toStringAsFixed(2);
 
                   return Container(
                     margin: EdgeInsets.only(bottom: 12.0),
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
                         border: Border.all(color: Colors.black12)),
-                    height: 230.0,
+                    height: 250.0,
                     child: GestureDetector(
                       child: Column(
                         children: [
@@ -184,6 +248,17 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.end,
+                                    children: [
+                                      Text(
+                                        '$_calculateDistance km ',
+                                        style: TextStyle(
+                                            color: Colors.black54,
+                                            fontWeight: FontWeight.w500),
+                                      ),
+                                    ],
+                                  ),
                                   Text(
                                     '${document['judul']}',
                                     style: TextStyle(
@@ -234,9 +309,10 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Detail(
+                                    tengkulakAddress: _currentAddress.toString(),
                                     docIdProduct: document['docIdProduct'],
                                     typeUsers: document['jenis pengguna'],
-                                    userName: document['nama lengkap'],
+                                    fullname: document['nama lengkap'],
                                     phoneNumber: document['nomor HP'],
                                     location: document['alamat'],
                                     unit: document['satuan'],
@@ -282,7 +358,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
       Placemark place = placemarks[0];
 
       setState(() {
-        _currentAddress = "${place.locality}, ${place.subAdministrativeArea}";
+        _currentAddress = "${place.street}, ${place.subLocality}";
       });
     } catch (e) {
       print(e);

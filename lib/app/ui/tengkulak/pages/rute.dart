@@ -10,10 +10,15 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 
 class Rute extends StatefulWidget {
+  final String tengkulakAddress;
   final String location;
   final GeoPoint coordinate;
 
-  const Rute({Key? key, required this.coordinate, required this.location})
+  const Rute(
+      {Key? key,
+      required this.tengkulakAddress,
+      required this.coordinate,
+      required this.location})
       : super(key: key);
 
   @override
@@ -27,7 +32,7 @@ class _RuteState extends State<Rute> {
   late GoogleMapController mapController;
 
   late Position _currentPosition;
-  String _currentAddress = '';
+  var _currentAddress;
 
   final startAddressController = TextEditingController();
   final destinationAddressController = TextEditingController();
@@ -51,7 +56,6 @@ class _RuteState extends State<Rute> {
     required TextEditingController controller,
     required FocusNode focusNode,
     required String label,
-    required String hint,
     required double width,
     required Icon prefixIcon,
     Widget? suffixIcon,
@@ -90,7 +94,6 @@ class _RuteState extends State<Rute> {
             ),
           ),
           contentPadding: EdgeInsets.all(15),
-          hintText: hint,
         ),
       ),
     );
@@ -102,6 +105,7 @@ class _RuteState extends State<Rute> {
         .then((Position position) async {
       setState(() {
         _currentPosition = position;
+        _getAddress();
         print('CURRENT POS: $_currentPosition');
         mapController.animateCamera(
           CameraUpdate.newCameraPosition(
@@ -112,7 +116,6 @@ class _RuteState extends State<Rute> {
           ),
         );
       });
-      await _getAddress();
     }).catchError((e) {
       print(e);
     });
@@ -127,10 +130,7 @@ class _RuteState extends State<Rute> {
       Placemark place = p[0];
 
       setState(() {
-        _currentAddress =
-            "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
-        startAddressController.text = _currentAddress;
-        _startAddress = _currentAddress;
+        _currentAddress = "${place.street}, ${place.subLocality}";
       });
     } catch (e) {
       print(e);
@@ -274,7 +274,7 @@ class _RuteState extends State<Rute> {
   // metode euclidean distance
   // Formula for calculating distance between two coordinates
   double _coordinateDistance(lat1, lon1, lat2, lon2) {
-    double d = 111.322; 
+    double d = 111.322;
     return sqrt(pow(lat2 - lat1, 2) + pow(lon2 - lon1, 2)) * d;
   }
 
@@ -313,6 +313,10 @@ class _RuteState extends State<Rute> {
   void initState() {
     super.initState();
     _getCurrentLocation();
+    startAddressController.text = widget.tengkulakAddress;
+    _startAddress = widget.tengkulakAddress;
+    destinationAddressController.text = widget.location;
+    _destinationAddress = widget.location;
   }
 
   @override
@@ -423,13 +427,13 @@ class _RuteState extends State<Rute> {
                           SizedBox(height: 12),
                           _textField(
                               label: 'Lokasi Anda',
-                              hint: 'Lokasi Anda Sekarang',
                               prefixIcon: Icon(Icons.looks_one),
                               suffixIcon: IconButton(
                                 icon: Icon(Icons.my_location),
                                 onPressed: () {
-                                  startAddressController.text = _currentAddress;
-                                  _startAddress = _currentAddress;
+                                  startAddressController.text =
+                                      widget.tengkulakAddress;
+                                  _startAddress = widget.tengkulakAddress;
                                 },
                               ),
                               controller: startAddressController,
@@ -443,7 +447,6 @@ class _RuteState extends State<Rute> {
                           SizedBox(height: 10),
                           _textField(
                               label: 'Tujuan',
-                              hint: 'Lokasi Petani',
                               prefixIcon: Icon(Icons.looks_two),
                               suffixIcon: IconButton(
                                 icon: Icon(Icons.location_on),

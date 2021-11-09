@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/admin/pages/dashboard.dart';
 import 'package:kakaoo/app/ui/admin/pages/orders.dart';
 import 'package:kakaoo/app/ui/constants.dart';
@@ -6,6 +8,7 @@ import 'package:kakaoo/app/ui/petani/login.dart';
 import 'package:kakaoo/app/ui/tengkulak/login.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
 
 
@@ -22,25 +25,35 @@ class MyApp extends StatelessWidget {
     final newTextTheme = Theme.of(context).textTheme.apply(
         bodyColor: AppColor().colorChocolate,
         displayColor: AppColor().colorChocolate);
-    return MaterialApp(
-      title: 'Kakaoo',
-      debugShowCheckedModeBanner: false,
-      initialRoute: '/',
-      routes: {
-        '/loginPetani': (_) => LoginPetani(),
-        '/dashboard': (_) => Admin(),
-        '/orders': (_) => Orders(),
-        '/loginTengkulak': (_) => LoginTengkulak(),
-      },
-      theme: ThemeData(
-          textTheme: newTextTheme,
-          primaryColor: AppColor().colorCreamy,
-          primarySwatch: Colors.brown,
-          inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(color: Colors.grey),
-          ),
-          backgroundColor: Colors.white),
-      home: MySplash(),
+    return MultiProvider(
+      providers: [
+        Provider<AuthService>(
+          create: (_) => AuthService(FirebaseAuth.instance)),
+        StreamProvider(
+          create: (context) => context.read<AuthService>().authStateChanges,  
+          initialData: [])
+      ],
+
+      child: MaterialApp(
+        title: 'Kakaoo',
+        debugShowCheckedModeBanner: false,
+        initialRoute: '/',
+        routes: {
+          '/loginPetani': (_) => LoginPetani(),
+          '/dashboard': (_) => Admin(),
+          '/orders': (_) => Orders(),
+          '/loginTengkulak': (_) => LoginTengkulak(),
+        },
+        theme: ThemeData(
+            textTheme: newTextTheme,
+            primaryColor: AppColor().colorCreamy,
+            primarySwatch: Colors.brown,
+            inputDecorationTheme: InputDecorationTheme(
+              labelStyle: TextStyle(color: Colors.grey),
+            ),
+            backgroundColor: Colors.white),
+        home: MySplash(),
+      ),
     );
   }
 }

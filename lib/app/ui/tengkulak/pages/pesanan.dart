@@ -5,13 +5,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-var userName;
+var fullname;
 var email;
 var phoneNumber;
 
@@ -49,21 +50,19 @@ class _PesananState extends State<Pesanan> {
   }
 
   Future getUser() async {
-    if (auth.currentUser != null) {
-      await firestore
-          .collection('tengkulak')
-          .where('userId', isEqualTo: auth.currentUser!.uid)
-          .get()
-          .then((result) {
-        if (result.docs.length > 0) {
-          setState(() {
-            userName = result.docs[0].data()['nama lengkap'];
-            email = result.docs[0].data()['email'];
-            phoneNumber = result.docs[0].data()['nomor HP'];
-          });
-        }
-      });
-    }
+    await firestore
+        .collection('tengkulak')
+        .where('userId')
+        .get()
+        .then((result) {
+      if (result.docs.length > 0) {
+        setState(() {
+          fullname = result.docs[0].data()['nama lengkap'];
+          email = result.docs[0].data()['email'];
+          phoneNumber = result.docs[0].data()['nomor HP'];
+        });
+      }
+    });
   }
 
   @override
@@ -274,7 +273,7 @@ class _PesananState extends State<Pesanan> {
                           if (_formKey.currentState!.validate()) {
                             await firestore.collection('pesanan').add({
                               'docIdProduct': widget.docIdProduct,
-                              'nama lengkap': userName,
+                              'nama lengkap': fullname,
                               'nomor HP': phoneNumber,
                               'email': email,
                               'file foto': widget.imageFile,
@@ -284,7 +283,10 @@ class _PesananState extends State<Pesanan> {
                               'total bayar': totalPay.toString(),
                               'bukti bayar': _imageUrl
                             });
-                            dialogSuccess();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => NotifSuccess()));
                           }
                         },
                         child: Row(
@@ -309,39 +311,6 @@ class _PesananState extends State<Pesanan> {
             ],
           )),
     );
-  }
-
-  dialogSuccess() {
-    return showDialog(
-        context: context,
-        builder: (_) {
-          return AlertDialog(
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 60,
-                  color: AppColor().colorChocolate,
-                ),
-                SizedBox(
-                  height: 8,
-                ),
-                Text("Berhasil", style: TextStyle(fontWeight: FontWeight.w500))
-              ],
-            ),
-            actions: [
-              Center(
-                child: TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text("OK",
-                        style: TextStyle(fontWeight: FontWeight.w500))),
-              )
-            ],
-          );
-        });
   }
 
   Color getColor(Set<MaterialState> states) {
@@ -385,5 +354,52 @@ class _PesananState extends State<Pesanan> {
     } else {
       print('Tidak dapat ditampilkan');
     }
+  }
+}
+
+class NotifSuccess extends StatefulWidget {
+  const NotifSuccess({Key? key}) : super(key: key);
+
+  @override
+  _NotifSuccessState createState() => _NotifSuccessState();
+}
+
+class _NotifSuccessState extends State<NotifSuccess> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: AppColor().colorCreamy,
+          title: Text(
+            'Transaksi',
+            style: TextStyle(color: AppColor().colorChocolate),
+          ),
+          leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(
+                Icons.close,
+                color: AppColor().colorChocolate,
+              ))),
+      body: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              'assets/success.svg',
+              width: 240,
+            ),
+            SizedBox(
+              height: 24,
+            ),
+            Text(
+              'Pembayaran Berhasil',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
