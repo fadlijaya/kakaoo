@@ -26,7 +26,6 @@ class _AkunState extends State<Akun> {
   }
 
   Future getUser() async {
-    // ignore: unnecessary_null_comparison
      await firestore
           .collection('tengkulak')
           .where('userId')

@@ -26,7 +26,7 @@ class AuthService {
         User? user = FirebaseAuth.instance.currentUser;
 
         await FirebaseFirestore.instance
-            .collection('petani')
+            .collection('users')
             .doc(user!.uid)
             .set({
           'userId': user.uid,

@@ -29,6 +29,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
   @override
   void initState() {
     getCurrentLocation();
+    updatePenjualan();
     super.initState();
   }
 
@@ -39,7 +40,14 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
           child: Container(
         padding: EdgeInsets.all(paddingDefault),
         child: Stack(
-          children: [widgetHeader(), widgetListData()],
+          children: [
+            widgetHeader(),
+            _currentPosition != null
+                ? widgetListData()
+                : Center(
+                    child: CircularProgressIndicator(),
+                  )
+          ],
         ),
       )),
     );
@@ -59,11 +67,13 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                         Icons.location_on,
                         color: AppColor().colorChocolate,
                       ),
-                      Text(
-                        _currentAddress,
-                        style: TextStyle(
-                            color: AppColor().colorChocolate,
-                            fontWeight: FontWeight.w500),
+                      Flexible(
+                        child: Text(
+                          _currentAddress,
+                          style: TextStyle(
+                              color: AppColor().colorChocolate,
+                              fontWeight: FontWeight.w500),
+                        ),
                       ),
                     ],
                   )
@@ -123,7 +133,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
             ],
           ),
           SizedBox(
-            height: 24.0,
+            height: 16.0,
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -147,6 +157,19 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
     );
   }
 
+  CollectionReference penjualan =
+      FirebaseFirestore.instance.collection('penjualan');
+
+  String? docIdProduct;
+
+  Future<void> updatePenjualan() {
+    return penjualan
+        .doc(docIdProduct)
+        .update({'jarak': _calculateDistance})
+        .then((value) => print("Penjualan Updated"))
+        .catchError((error) => print("Failed to update penjualan: $error"));
+  }
+
   filterBottomSheet() {
     return showModalBottomSheet(
         context: context,
@@ -155,7 +178,9 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
             mainAxisSize: MainAxisSize.min,
             children: [
               GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  updatePenjualan();
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(paddingDefault),
                   child: Row(
@@ -181,14 +206,15 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
   String? _calculateDistance;
 
   double _coordinateDistance(lat2, lon2) {
+    double lat1 = _currentPosition.latitude;
+    double lon1 = _currentPosition.longitude;
     double d = 111.322;
-    return sqrt(pow(lat2 - _currentPosition.latitude, 2) +
-            pow(lon2 - _currentPosition.longitude, 2)) * d;
+    return sqrt(pow(lat2 - lat1, 2) + pow(lon2 - lon1, 2)) * d;
   }
 
   widgetListData() {
     return Container(
-      margin: EdgeInsets.only(top: 160.0),
+      margin: EdgeInsets.only(top: 170.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -217,6 +243,8 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                   final int harga = int.parse(document['harga']);
                   final GeoPoint destLatLong = document['posisi kordinat'];
 
+                  docIdProduct = document['docIdProduct'];
+
                   _calculateDistance = _coordinateDistance(
                           destLatLong.latitude, destLatLong.longitude)
                       .toStringAsFixed(2);
@@ -230,19 +258,29 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                     child: GestureDetector(
                       child: Column(
                         children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(8.0),
-                                topRight: Radius.circular(8.0)),
-                            child: Container(
-                              height: 120.0,
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                          "${document['file foto']}"))),
-                            ),
-                          ),
+                          document['file foto'] == null
+                              ? Container(
+                                  height: 120,
+                                  child: Center(
+                                      child: Text(
+                                    'Tidak Dapat Memuat Gambar, Coba lagi',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  )),
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(8.0),
+                                      topRight: Radius.circular(8.0)),
+                                  child: Container(
+                                    height: 120.0,
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            fit: BoxFit.cover,
+                                            image: NetworkImage(
+                                                "${document['file foto']}"))),
+                                  ),
+                                ),
                           Container(
                               padding: EdgeInsets.all(paddingDefault),
                               child: Column(
@@ -252,7 +290,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        '$_calculateDistance km ',
+                                        '$_calculateDistance Km ',
                                         style: TextStyle(
                                             color: Colors.black54,
                                             fontWeight: FontWeight.w500),
@@ -309,7 +347,8 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Detail(
-                                    tengkulakAddress: _currentAddress.toString(),
+                                    tengkulakAddress:
+                                        _currentAddress.toString(),
                                     docIdProduct: document['docIdProduct'],
                                     typeUsers: document['jenis pengguna'],
                                     fullname: document['nama lengkap'],

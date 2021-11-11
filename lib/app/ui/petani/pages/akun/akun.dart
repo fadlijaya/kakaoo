@@ -7,6 +7,7 @@ import 'package:kakaoo/app/ui/petani/pages/akun/pengaturan/pengaturan.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
+final User? user = auth.currentUser;
 var fullName;
 var username;
 var email;
@@ -30,11 +31,7 @@ class _AkunState extends State<Akun> {
   }
 
   Future getUser() async {
-    await firestore
-        .collection('petani')
-        .where('userId', isEqualTo: auth.currentUser!.uid)
-        .get()
-        .then((result) {
+    await firestore.collection('petani').where('userId').get().then((result) {
       if (result.docs.length > 0) {
         setState(() {
           fullName = result.docs[0].data()['nama lengkap'];
@@ -99,7 +96,7 @@ class _AkunState extends State<Akun> {
                             MaterialPageRoute(
                                 builder: (context) => EditProfil(
                                       isEdit: true,
-                                      documentId: auth.currentUser!.uid,
+                                      documentId: user!.uid,
                                       fullName: fullName,
                                       username: username,
                                       phoneNumber: phoneNumber,

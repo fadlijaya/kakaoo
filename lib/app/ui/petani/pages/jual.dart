@@ -68,6 +68,7 @@ class _JualState extends State<Jual> {
 
   Future pickImage() async {
     final pickedFile =
+        // ignore: deprecated_member_use
         await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
       _imageFile = File(pickedFile!.path);
@@ -464,9 +465,10 @@ class _JualState extends State<Jual> {
                 });
               } else {
                 if (_formKey.currentState!.validate()) {
+                  User? user = auth.currentUser;
                   final docIdProduct = await firestore
                       .collection('petani')
-                      .doc(auth.currentUser!.uid)
+                      .doc(user!.uid)
                       .collection('penjualan')
                       .add({
                     'jenis pengguna': typeUsers,

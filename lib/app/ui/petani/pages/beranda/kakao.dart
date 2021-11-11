@@ -20,8 +20,10 @@ List<T> map<T>(List list, Function handler) {
 
 int _currentIndex = 0;
 
-User? user = FirebaseAuth.instance.currentUser;
-final Stream<QuerySnapshot> listProduct = FirebaseFirestore.instance
+final FirebaseAuth auth = FirebaseAuth.instance;
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
+final User? user = auth.currentUser;
+final Stream<QuerySnapshot> dataKakao = firestore
     .collection('petani')
     .doc(user!.uid)
     .collection('penjualan')
@@ -114,7 +116,7 @@ class _KakaoState extends State<Kakao> {
               padding: EdgeInsets.symmetric(
                   vertical: paddingDefault, horizontal: paddingDefault),
               child: StreamBuilder<QuerySnapshot>(
-                  stream: listProduct,
+                  stream: dataKakao,
                   builder: (BuildContext context,
                       AsyncSnapshot<QuerySnapshot> snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
@@ -163,8 +165,12 @@ class _KakaoState extends State<Kakao> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Container(
-                                        child: document['file foto'] != null
+                                        child: document['file foto'] == null
                                             ? Container(
+                                                height: 120,
+                                                child: 
+                                              )
+                                            : Container(
                                                 width: double.infinity,
                                                 height: 120.0,
                                                 decoration: BoxDecoration(
@@ -179,16 +185,6 @@ class _KakaoState extends State<Kakao> {
                                                         fit: BoxFit.cover,
                                                         image: NetworkImage(
                                                             "${document['file foto']}"))),
-                                              )
-                                            : Container(
-                                                height: 120,
-                                                child: Center(
-                                                    child: Text(
-                                                  'Tidak Dapat Memuat Gambar',
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: Colors.grey),
-                                                )),
                                               )),
                                     ListTile(
                                       isThreeLine: false,

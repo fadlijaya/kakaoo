@@ -329,6 +329,7 @@ class _PesananState extends State<Pesanan> {
 
   Future pickImage() async {
     final pickedFile =
+        // ignore: deprecated_member_use
         await ImagePicker().getImage(source: ImageSource.gallery);
     setState(() {
       _paymentFile = File(pickedFile!.path);

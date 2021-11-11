@@ -2,16 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/services/auth_services.dart';
-import 'package:kakaoo/app/ui/admin/pages/dashboard.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/kodeOtp.dart';
 import 'package:kakaoo/app/ui/petani/pages/home.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
-// ignore: implementation_imports
-import 'package:provider/src/provider.dart';
+import 'package:provider/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
+final User? user = FirebaseAuth.instance.currentUser;
 
 class LoginPetani extends StatefulWidget {
   @override
@@ -170,7 +169,8 @@ class _LoginPetaniState extends State<LoginPetani> {
                                   Navigator.pushAndRemoveUntil(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (BuildContext context) => Home(),
+                                      builder: (BuildContext context) =>
+                                          Home(),
                                     ),
                                     (route) => false,
                                   );
@@ -225,45 +225,5 @@ class _LoginPetaniState extends State<LoginPetani> {
 
   displaySnackBar(text) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
-  }
-
-  getAdmin() async {
-    await FirebaseFirestore.instance
-        .collection('admin')
-        .doc(auth.currentUser!.uid)
-        .get()
-        .then((user) => {
-              // ignore: unnecessary_null_comparison
-              if (user != null)
-                {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => Admin(),
-                    ),
-                    (route) => false,
-                  )
-                }
-            });
-  }
-
-  getUsersPetani() async {
-    await FirebaseFirestore.instance
-        .collection('petani')
-        .where('userId', isEqualTo: auth.currentUser!.uid)
-        .get()
-        .then((user) => {
-              // ignore: unnecessary_null_comparison
-              if (user != null)
-                {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(
-                      builder: (BuildContext context) => Home(),
-                    ),
-                    (route) => false,
-                  )
-                }
-            });
   }
 }
