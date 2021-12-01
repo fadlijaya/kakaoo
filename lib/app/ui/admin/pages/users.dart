@@ -61,8 +61,8 @@ class _UsersState extends State<Users> {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text("Email"),
-                                    Text("${data['email']}",  style: TextStyle(fontWeight: FontWeight.w500),),
+                                    Text("Username"),
+                                    Text("${data['nama pengguna']}",  style: TextStyle(fontWeight: FontWeight.w500),),
                                   ],
                                 ),
                                 SizedBox(height: 8,),

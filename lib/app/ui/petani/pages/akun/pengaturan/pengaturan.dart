@@ -28,7 +28,8 @@ class _PengaturanState extends State<Pengaturan> {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UbahPassword())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UbahPassword(
+              ))),
               child: Card(
                 child: ListTile(
                   title: Text('Privasi'),

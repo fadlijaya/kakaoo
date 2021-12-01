@@ -10,7 +10,6 @@ import 'package:provider/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-final User? user = FirebaseAuth.instance.currentUser;
 
 class LoginPetani extends StatefulWidget {
   @override
@@ -36,7 +35,7 @@ class _LoginPetaniState extends State<LoginPetani> {
 
   @override
   void initState() {
-    if (auth.currentUser != null) {
+    /*if (auth.currentUser != null) {
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -46,7 +45,7 @@ class _LoginPetaniState extends State<LoginPetani> {
           (route) => false,
         );
       });
-    }
+    }*/
     super.initState();
   }
 
@@ -164,16 +163,16 @@ class _LoginPetaniState extends State<LoginPetani> {
                                       'Username dan Password Salah');
                                 } else {
                                   context.read<AuthService>().login(
-                                      snapshot.docs[0]['email'], password);
+                                        snapshot.docs[0]['email'], password);
 
-                                  Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          Home(),
-                                    ),
-                                    (route) => false,
-                                  );
+                                    Navigator.pushAndRemoveUntil(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            Home(),
+                                      ),
+                                      (route) => false,
+                                    );
                                 }
                               }
                             }

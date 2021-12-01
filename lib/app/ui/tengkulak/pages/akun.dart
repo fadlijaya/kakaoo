@@ -2,13 +2,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
+import 'package:kakaoo/app/ui/tengkulak/pages/edit_profil.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 var fullname;
 var phoneNumber;
-var email;
+var username;
+String? userId;
 
 class Akun extends StatefulWidget {
   const Akun({
@@ -26,19 +28,20 @@ class _AkunState extends State<Akun> {
   }
 
   Future getUser() async {
-     await firestore
-          .collection('tengkulak')
-          .where('userId')
-          .get()
-          .then((result) {
-        if (result.docs.length > 0) {
-          setState(() {
-            fullname = result.docs[0].data()['nama lengkap'];
-            phoneNumber = result.docs[0].data()['nomor HP'];
-            email = result.docs[0].data()['email'];
-          });
-        }
-      });
+    await firestore
+        .collection('tengkulak')
+        .where('userId')
+        .get()
+        .then((result) {
+      if (result.docs.length > 0) {
+        setState(() {
+          fullname = result.docs[0].data()['nama lengkap'];
+          phoneNumber = result.docs[0].data()['nomor HP'];
+          username = result.docs[0].data()['nama pengguna'];
+          userId = result.docs[0].data()['userId'];
+        });
+      }
+    });
   }
 
   @override
@@ -105,6 +108,28 @@ class _AkunState extends State<Akun> {
                         fontWeight: FontWeight.w500,
                         fontSize: 18.0),
                   ),
+                  TextButton(
+                      style: ButtonStyle(
+                          side: MaterialStateProperty.all(BorderSide(
+                        style: BorderStyle.solid,
+                        color: Colors.white,
+                      ))),
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EditProfil(
+                                      isEdit: true,
+                                      documentId: userId.toString(),
+                                      fullname: fullname,
+                                      username: username,
+                                      phoneNumber: phoneNumber,
+                                    )));
+                      },
+                      child: Text(
+                        'Edit Profil',
+                        style: TextStyle(color: Colors.white),
+                      ))
                 ],
               )
             ],
@@ -129,7 +154,7 @@ class _AkunState extends State<Akun> {
                   SizedBox(
                     width: 12.0,
                   ),
-                  Text("$phoneNumber", style: TextStyle(color: Colors.black54))
+                  Text("$username", style: TextStyle(color: Colors.black54))
                 ],
               ),
             ),
@@ -147,7 +172,7 @@ class _AkunState extends State<Akun> {
                     width: 12.0,
                   ),
                   Text(
-                    "$email",
+                    "$phoneNumber",
                     style: TextStyle(color: Colors.black54),
                   )
                 ],

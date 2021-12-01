@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/login.dart';
+import 'package:kakaoo/app/ui/petani/pages/home.dart';
 import 'package:kakaoo/app/ui/tengkulak/login.dart';
+import 'package:provider/src/provider.dart';
 
 class UserLogin extends StatefulWidget {
   @override
@@ -26,7 +29,11 @@ class _UserLoginState extends State<UserLogin> {
                       semanticLabel: 'logo',
                       width: 100.0,
                     ),
-                     Text('Kakaoo', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),),
+                    Text(
+                      'Kakaoo',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
                   ],
                 ),
               ),
@@ -94,8 +101,7 @@ class _UserLoginState extends State<UserLogin> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => LoginPetani(),
-                                ));
+                                    builder: (context) => Authenticate()));
                           },
                           child: Text(
                             'Masuk sebagai Petani',
@@ -110,5 +116,20 @@ class _UserLoginState extends State<UserLogin> {
             ],
           )),
     );
+  }
+}
+
+class Authenticate extends StatelessWidget {
+  const Authenticate({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final user = context.watch<User?>();
+
+    if (user != null) {
+      return Home();
+    }
+
+    return LoginPetani();
   }
 }

@@ -102,7 +102,8 @@ class _OrdersState extends State<Orders> {
                                                   document['nama lengkap'],
                                               ordersPhoneNumber:
                                                   document['nomor HP'],
-                                              ordersEmail: document['email'])));
+                                              ordersUsername: document['nama pengguna']
+                                              )));
                                 } else if (value == 'hapus') {
                                   showDialog(
                                       context: context,
@@ -147,10 +148,10 @@ class Detail extends StatefulWidget {
   final String price;
   final int itemCount;
   final String totalPay;
-  final String paymentFile;
+  final String? paymentFile;
   final String ordersName;
   final String ordersPhoneNumber;
-  final String ordersEmail;
+  final String ordersUsername;
 
   const Detail(
       {Key? key,
@@ -163,7 +164,7 @@ class Detail extends StatefulWidget {
       required this.paymentFile,
       required this.ordersName,
       required this.ordersPhoneNumber,
-      required this.ordersEmail})
+      required this.ordersUsername})
       : super(key: key);
 
   @override
@@ -219,8 +220,8 @@ class _DetailState extends State<Detail> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("Email", style: TextStyle(color: Colors.black54)),
-              Text(widget.ordersEmail)
+              Text("Username", style: TextStyle(color: Colors.black54)),
+              Text(widget.ordersUsername)
             ],
           ),
           Divider(

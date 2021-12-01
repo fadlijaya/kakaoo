@@ -116,7 +116,7 @@ class _KodeOtpState extends State<KodeOtp> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return 'Masukkan Nomor HP';
-                                    } else if (value.length < 12) {
+                                    } else if (value.length < 11) {
                                       return 'Nomor Salah';
                                     }
                                   },

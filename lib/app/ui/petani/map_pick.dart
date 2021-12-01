@@ -219,11 +219,10 @@ class _MapPickState extends State<MapPick> {
                                     isEdit: false,
                                     
                                     location: _textEditingController.text,
-                                    coordinateLat: _currentPosition.latitude,
-                                    coordinateLon: _currentPosition.longitude,
+                                    coordinateLat: cameraPosition.target.latitude,
+                                    coordinateLon: cameraPosition.target.longitude,
                                   )));
-                      print(
-                          "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
+                      print("Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
                       print("Address: ${_textEditingController.text}");
                     },
                     child: Container(

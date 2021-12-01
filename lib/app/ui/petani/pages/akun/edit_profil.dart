@@ -9,23 +9,20 @@ final FirebaseAuth auth = FirebaseAuth.instance;
 class EditProfil extends StatefulWidget {
   final bool isEdit;
   final String documentId;
-  final String email;
-  final String address;
   final String phoneNumber;
   final String fullName;
   final String username;
   final String password;
-  const EditProfil(
-      {Key? key,
-      required this.isEdit,
-      this.documentId = '',
-      this.email = '',
-      this.address = '',
-      this.phoneNumber = '',
-      this.fullName = '',
-      this.username = '',
-      required this.password})
-      : super(key: key);
+
+  const EditProfil({
+    Key? key,
+    required this.isEdit,
+    this.documentId = '',
+    this.phoneNumber = '',
+    this.fullName = '',
+    this.username = '',
+    this.password = '',
+  }) : super(key: key);
 
   @override
   _EditProfilState createState() => _EditProfilState();
@@ -36,20 +33,27 @@ class _EditProfilState extends State<EditProfil> {
 
   TextEditingController _fullName = TextEditingController();
   TextEditingController _username = TextEditingController();
-  TextEditingController _email = TextEditingController();
   TextEditingController _phoneNumber = TextEditingController();
-  TextEditingController _address = TextEditingController();
+  TextEditingController _password = TextEditingController();
 
   bool isLoading = false;
+  bool isHidePassword = true;
+
+  void togglePasswordVisibility() {
+    setState(() {
+      isHidePassword = !isHidePassword;
+    });
+  }
 
   @override
   void initState() {
     if (widget.isEdit) {
-      _fullName.text = widget.fullName;
-      _username.text = widget.username;
-      _address.text = widget.address;
-      _email.text = widget.email;
-      _phoneNumber.text = widget.phoneNumber;
+      setState(() {
+        _fullName.text = widget.fullName;
+        _username.text = widget.username;
+        _phoneNumber.text = widget.phoneNumber;
+        _password.text = widget.password;
+      });
     }
     super.initState();
   }
@@ -89,84 +93,106 @@ class _EditProfilState extends State<EditProfil> {
   formProfil() {
     final node = FocusScope.of(context);
 
-    return Container(
-        padding: EdgeInsets.all(paddingDefault),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Informasi Dasar',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(height: 12.0),
-              TextFormField(
-                controller: _fullName,
-                textInputAction: TextInputAction.next,
-                onEditingComplete: () => node.nextFocus(),
-                decoration: InputDecoration(
-                  labelText: 'Nama Lengkap',
+    return SingleChildScrollView(
+      child: Container(
+          padding: EdgeInsets.all(paddingDefault),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Informasi Dasar',
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
                 ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Masukkan Nama Lengkap';
-                  }
-                },
-              ),
-              TextFormField(
-                controller: _username,
-                textInputAction: TextInputAction.next,
-                onEditingComplete: () => node.nextFocus(),
-                decoration: InputDecoration(
-                  labelText: 'Nama Pengguna',
+                SizedBox(height: 12.0),
+                TextFormField(
+                  controller: _fullName,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
+                  decoration: InputDecoration(
+                    labelText: 'Nama Lengkap',
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Masukkan Nama Lengkap';
+                    }
+                  },
                 ),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Masukkan Nama Pengguna';
-                  }
-                },
-              ),
-              TextFormField(
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-                controller: _email,
-                onFieldSubmitted: (value) => node.unfocus(),
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Masukkan Email';
-                  }
-                },
-              ),
-              SizedBox(
-                height: 32.0,
-              ),
-              Text(
-                'Informasi Kontak',
-                style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-              ),
-              SizedBox(
-                height: 12.0,
-              ),
-              TextFormField(
-                keyboardType: TextInputType.phone,
-                textInputAction: TextInputAction.next,
-                onEditingComplete: () => node.nextFocus(),
-                controller: _phoneNumber,
-                decoration: InputDecoration(labelText: 'Nomor HP'),
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return 'Masukkan Nomor HP';
-                  }
-                },
-              ),
-              SizedBox(
-                height: 8.0,
-              ),
-            ],
-          ),
-        ));
+                TextFormField(
+                  controller: _username,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
+                  decoration: InputDecoration(
+                    labelText: 'Username',
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Masukkan Username';
+                    }
+                  },
+                ),
+                SizedBox(
+                  height: 32.0,
+                ),
+                Text(
+                  'Informasi Kontak',
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
+                  controller: _phoneNumber,
+                  decoration: InputDecoration(labelText: 'Nomor HP'),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Masukkan Nomor HP';
+                    }
+                  },
+                ),
+                SizedBox(
+                  height: 32.0,
+                ),
+                Text(
+                  'Kata Sandi',
+                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
+                ),
+                SizedBox(
+                  height: 12.0,
+                ),
+                TextFormField(
+                  obscureText: isHidePassword,
+                  textInputAction: TextInputAction.done,
+                  onEditingComplete: () => node.nextFocus(),
+                  controller: _password,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                     suffixIcon: GestureDetector(
+                        onTap: () {
+                          togglePasswordVisibility();
+                        },
+                        child: Icon(
+                            isHidePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: isHidePassword
+                                ? Colors.grey
+                                : AppColor().colorChocolate),
+                      )),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Masukkan Password';
+                    }
+                  },
+                ),
+              ],
+            ),
+          )),
+    );
   }
 
   updateData() async {
@@ -175,26 +201,45 @@ class _EditProfilState extends State<EditProfil> {
     });
 
     if (widget.isEdit) {
-      DocumentReference docRef =
-          firestore.collection('users').doc(auth.currentUser!.uid);
+      DocumentReference docRefUsers =
+          firestore.collection('users').doc(widget.documentId);
 
       firestore.runTransaction((transaction) async {
-        DocumentSnapshot task = await transaction.get(docRef);
+        DocumentSnapshot task = await transaction.get(docRefUsers);
         if (task.exists) {
           // ignore: await_only_futures
           await transaction.update(
-            docRef,
+            docRefUsers,
             <String, dynamic>{
               'nama lengkap': _fullName.text,
               'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
-              'alamat': _address.text,
-              'email': _email.text
+              'password': _password.text
             },
           );
         }
-        Navigator.pop(context);
       });
+
+      DocumentReference docRefPetani =
+          firestore.collection('petani').doc(widget.documentId);
+
+      firestore.runTransaction((transaction) async {
+        DocumentSnapshot task = await transaction.get(docRefPetani);
+        if (task.exists) {
+          // ignore: await_only_futures
+          await transaction.update(
+            docRefPetani,
+            <String, dynamic>{
+              'nama lengkap': _fullName.text,
+              'nama pengguna': _username.text,
+              'nomor HP': _phoneNumber.text,
+              'password': _password.text
+            },
+          );
+        }
+      });
+
+      Navigator.pop(context);
     }
   }
 }

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -17,31 +16,22 @@ class AuthService {
     }
   }
 
-  Future<String> signUp(String email, String password, String username,
-      String fullname, String phoneNumber, String title) async {
+  Future<String> signUp(String email, String password) async {
     try {
-      await auth
-          .createUserWithEmailAndPassword(email: email, password: password)
-          .then((value) async {
-        User? user = FirebaseAuth.instance.currentUser;
-
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(user!.uid)
-            .set({
-          'userId': user.uid,
-          'email': email,
-          'password': password,
-          'nama pengguna': username,
-          'nama lengkap': fullname,
-          'nomor HP': phoneNumber,
-          'jenis pengguna': title
-        });
-      });
+      await auth.createUserWithEmailAndPassword(
+          email: email, password: password);
       return "Signed Up";
     } catch (e) {
       print(e);
       return e.toString();
     }
+  }
+
+  Future<void> signOut() async {
+    await auth.signOut();
+  }
+
+  Future<String> uid() async {
+    return auth.currentUser!.uid;
   }
 }

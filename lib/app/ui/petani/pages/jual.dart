@@ -14,9 +14,10 @@ import 'package:kakaoo/app/ui/petani/pages/home.dart';
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 final FirebaseAuth auth = FirebaseAuth.instance;
 var typeUsers;
-var userName;
-var email;
+var fullname;
+var username;
 var phoneNumber;
+var userId;
 
 var _saleDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -29,7 +30,7 @@ class Jual extends StatefulWidget {
   final String title;
   final String desc;
   final String saleDate;
-  final String imageFile;
+  final String? imageFile;
 
   final String location;
   final double coordinateLat;
@@ -121,22 +122,17 @@ class _JualState extends State<Jual> {
   }
 
   Future getUser() async {
-    if (auth.currentUser != null) {
-      await firestore
-          .collection('users')
-          .where('userId', isEqualTo: auth.currentUser!.uid)
-          .get()
-          .then((result) {
-        if (result.docs.length > 0) {
-          setState(() {
-            typeUsers = result.docs[0].data()['jenis pengguna'];
-            userName = result.docs[0].data()['nama lengkap'];
-            email = result.docs[0].data()['email'];
-            phoneNumber = result.docs[0].data()['nomor HP'];
-          });
-        }
-      });
-    }
+    await firestore.collection('petani').where('userId').get().then((result) {
+      if (result.docs.length > 0) {
+        setState(() {
+          typeUsers = result.docs[0].data()['jenis pengguna'];
+          fullname = result.docs[0].data()['nama lengkap'];
+          username = result.docs[0].data()['nama pengguna'];
+          phoneNumber = result.docs[0].data()['nomor HP'];
+          userId = result.docs[0].data()['userId'];
+        });
+      }
+    });
   }
 
   @override
@@ -407,7 +403,7 @@ class _JualState extends State<Jual> {
               if (widget.isEdit) {
                 DocumentReference docRef = firestore
                     .collection('petani')
-                    .doc(auth.currentUser!.uid)
+                    .doc(userId)
                     .collection('penjualan')
                     .doc(widget.documentId);
                 firestore.runTransaction((transaction) async {
@@ -418,7 +414,7 @@ class _JualState extends State<Jual> {
                       docRef,
                       <String, dynamic>{
                         'jenis pengguna': typeUsers,
-                        'nama lengkap': userName,
+                        'nama lengkap': fullname,
                         'nomor HP': phoneNumber,
                         'alamat': _location.toString(),
                         'stok': _itemCount,
@@ -446,7 +442,7 @@ class _JualState extends State<Jual> {
                       documentReference,
                       <String, dynamic>{
                         'jenis pengguna': typeUsers,
-                        'nama lengkap': userName,
+                        'nama lengkap': fullname,
                         'nomor HP': phoneNumber,
                         'alamat': _location.toString(),
                         'stok': _itemCount,
@@ -465,14 +461,13 @@ class _JualState extends State<Jual> {
                 });
               } else {
                 if (_formKey.currentState!.validate()) {
-                  User? user = auth.currentUser;
                   final docIdProduct = await firestore
                       .collection('petani')
-                      .doc(user!.uid)
+                      .doc(userId)
                       .collection('penjualan')
                       .add({
                     'jenis pengguna': typeUsers,
-                    'nama lengkap': userName,
+                    'nama lengkap': fullname,
                     'nomor HP': phoneNumber,
                     'alamat': widget.location,
                     'stok': _itemCount,
@@ -491,7 +486,7 @@ class _JualState extends State<Jual> {
                   firestore.collection('penjualan').doc(docIdProduct.id).set({
                     'docIdProduct': docIdProduct.id,
                     'jenis pengguna': typeUsers,
-                    'nama lengkap': userName,
+                    'nama lengkap': fullname,
                     'nomor HP': phoneNumber,
                     'alamat': widget.location,
                     'stok': _itemCount,

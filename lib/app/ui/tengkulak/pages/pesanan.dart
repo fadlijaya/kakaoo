@@ -13,7 +13,7 @@ import 'package:kakaoo/app/ui/constants.dart';
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 var fullname;
-var email;
+var username;
 var phoneNumber;
 
 class Pesanan extends StatefulWidget {
@@ -58,7 +58,7 @@ class _PesananState extends State<Pesanan> {
       if (result.docs.length > 0) {
         setState(() {
           fullname = result.docs[0].data()['nama lengkap'];
-          email = result.docs[0].data()['email'];
+          username = result.docs[0].data()['nama pengguna'];
           phoneNumber = result.docs[0].data()['nomor HP'];
         });
       }
@@ -274,8 +274,8 @@ class _PesananState extends State<Pesanan> {
                             await firestore.collection('pesanan').add({
                               'docIdProduct': widget.docIdProduct,
                               'nama lengkap': fullname,
+                              'nama pengguna': username,
                               'nomor HP': phoneNumber,
-                              'email': email,
                               'file foto': widget.imageFile,
                               'judul': widget.title,
                               'harga': widget.price,

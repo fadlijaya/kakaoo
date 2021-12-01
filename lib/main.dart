@@ -5,12 +5,12 @@ import 'package:kakaoo/app/ui/admin/pages/dashboard.dart';
 import 'package:kakaoo/app/ui/admin/pages/orders.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/login.dart';
+import 'package:kakaoo/app/ui/petani/pages/home.dart';
 import 'package:kakaoo/app/ui/tengkulak/login.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:splash_screen_view/SplashScreenView.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,12 +28,11 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         Provider<AuthService>(
-          create: (_) => AuthService(FirebaseAuth.instance)),
+            create: (_) => AuthService(FirebaseAuth.instance)),
         StreamProvider(
-          create: (context) => context.read<AuthService>().authStateChanges,  
-          initialData: [])
+            create: (context) => context.read<AuthService>().authStateChanges,
+            initialData: [])
       ],
-
       child: MaterialApp(
         title: 'Kakaoo',
         debugShowCheckedModeBanner: false,
@@ -52,7 +51,7 @@ class MyApp extends StatelessWidget {
               labelStyle: TextStyle(color: Colors.grey),
             ),
             backgroundColor: Colors.white),
-        home: MySplash(),
+        home: MySplash()
       ),
     );
   }

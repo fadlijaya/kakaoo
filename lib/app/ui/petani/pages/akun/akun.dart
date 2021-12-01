@@ -1,18 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/pages/akun/edit_profil.dart';
 import 'package:kakaoo/app/ui/petani/pages/akun/pengaturan/pengaturan.dart';
+import 'package:kakaoo/app/ui/user_login.dart';
+import 'package:provider/src/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-final User? user = auth.currentUser;
-var fullName;
+var fullname;
 var username;
-var email;
 var password;
 var phoneNumber;
+String? userId;
 
 class Akun extends StatefulWidget {
   const Akun({
@@ -31,14 +33,14 @@ class _AkunState extends State<Akun> {
   }
 
   Future getUser() async {
-    await firestore.collection('petani').where('userId').get().then((result) {
+    await firestore.collection('petani').where('email').get().then((result) {
       if (result.docs.length > 0) {
         setState(() {
-          fullName = result.docs[0].data()['nama lengkap'];
+          fullname = result.docs[0].data()['nama lengkap'];
           username = result.docs[0].data()['nama pengguna'];
-          email = result.docs[0].data()['email'];
           password = result.docs[0].data()['password'];
           phoneNumber = result.docs[0].data()['nomor HP'];
+          userId = result.docs[0].data()['userId'];
         });
       }
     });
@@ -78,7 +80,7 @@ class _AkunState extends State<Akun> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "$fullName",
+                    "$fullname",
                     style: TextStyle(
                         color: AppColor().colorChocolate,
                         fontWeight: FontWeight.w500,
@@ -96,11 +98,10 @@ class _AkunState extends State<Akun> {
                             MaterialPageRoute(
                                 builder: (context) => EditProfil(
                                       isEdit: true,
-                                      documentId: user!.uid,
-                                      fullName: fullName,
+                                      documentId: userId.toString(),
+                                      fullName: fullname,
                                       username: username,
                                       phoneNumber: phoneNumber,
-                                      email: email,
                                       password: password,
                                     )));
                       },
@@ -124,11 +125,12 @@ class _AkunState extends State<Akun> {
               margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               child: Row(
                 children: [
-                  Icon(Icons.phone_android, color: AppColor().colorChocolate),
+                  Icon(Icons.account_circle_rounded,
+                      color: AppColor().colorChocolate),
                   SizedBox(
                     width: 12.0,
                   ),
-                  Text("$phoneNumber", style: TextStyle(color: Colors.black54))
+                  Text("$username", style: TextStyle(color: Colors.black54))
                 ],
               ),
             ),
@@ -139,14 +141,14 @@ class _AkunState extends State<Akun> {
               child: Row(
                 children: [
                   Icon(
-                    Icons.email,
+                    Icons.phone_android,
                     color: AppColor().colorChocolate,
                   ),
                   SizedBox(
                     width: 12.0,
                   ),
                   Text(
-                    "$email",
+                    "$phoneNumber",
                     style: TextStyle(color: Colors.black54),
                   )
                 ],
@@ -154,27 +156,59 @@ class _AkunState extends State<Akun> {
             ),
           ),
           GestureDetector(
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => Pengaturan())),
+              onTap: () => showAlertDialog(),
               child: Card(
                 child: ListTile(
-                  leading: Icon(
-                    Icons.settings,
-                    color: AppColor().colorChocolate,
-                  ),
-                  title: Text('Pengaturan'),
-                  subtitle: Text(
-                    'Privasi dan Log out',
-                    style: TextStyle(color: Colors.black54),
-                  ),
-                  trailing: Icon(
-                    Icons.arrow_forward_ios,
-                    size: 16.0,
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.exit_to_app,
+                        color: Colors.red,
+                      ),
+                      SizedBox(
+                        width: 12,
+                      ),
+                      Text('Log out',
+                          style: TextStyle(
+                            color: Colors.red,
+                          )),
+                    ],
                   ),
                 ),
               )),
         ],
       ),
     );
+  }
+
+  showAlertDialog() {
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Konfirmasi'),
+            content: Text('Anda yakin ingin Keluar ?'),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text(
+                    'Batal',
+                    style: TextStyle(color: Colors.grey),
+                  )),
+              TextButton(
+                  onPressed: () {
+                    context.read<AuthService>().signOut();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => UserLogin()),
+                        (route) => false);
+                  },
+                  child: Text('Ya'))
+            ],
+          );
+        });
   }
 }

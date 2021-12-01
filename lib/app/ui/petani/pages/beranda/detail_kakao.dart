@@ -17,7 +17,7 @@ class DetailKakao extends StatefulWidget {
   final String desc;
   final GeoPoint coordinate;
   final String saleDate;
-  final String imageFile;
+  final String? imageFile;
 
   const DetailKakao({
     Key? key,
@@ -61,16 +61,29 @@ class _DetailKakaoState extends State<DetailKakao> {
                   children: <Widget>[
                     Stack(
                       children: <Widget>[
-                        Container(
-                          width: double.infinity,
-                          height: 200,
-                          child: ClipRRect(
-                            child: Image.network(
-                              "${widget.imageFile}",
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
+                        widget.imageFile == null
+                            ? Container(
+                              width: double.infinity,
+                                height: 200,
+                                child: ClipRRect(
+                                  child: Center(
+                                      child: Text(
+                                    'Tidak Dapat Memuat Gambar, Coba lagi',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  )),
+                                ),
+                              )
+                            : Container(
+                                width: double.infinity,
+                                height: 200,
+                                child: ClipRRect(
+                                  child: Image.network(
+                                    "${widget.imageFile}",
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                              ),
                         Positioned(
                             top: 9,
                             left: 9,

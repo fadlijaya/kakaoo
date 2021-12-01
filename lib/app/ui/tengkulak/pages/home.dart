@@ -258,17 +258,8 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                     child: GestureDetector(
                       child: Column(
                         children: [
-                          document['file foto'] == null
-                              ? Container(
-                                  height: 120,
-                                  child: Center(
-                                      child: Text(
-                                    'Tidak Dapat Memuat Gambar, Coba lagi',
-                                    style: TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                  )),
-                                )
-                              : ClipRRect(
+                          document['file foto'] != null
+                              ? ClipRRect(
                                   borderRadius: BorderRadius.only(
                                       topLeft: Radius.circular(8.0),
                                       topRight: Radius.circular(8.0)),
@@ -280,6 +271,15 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                                             image: NetworkImage(
                                                 "${document['file foto']}"))),
                                   ),
+                                )
+                              : Container(
+                                  height: 120,
+                                  child: Center(
+                                      child: Text(
+                                    'Tidak Dapat Memuat Gambar, Coba lagi',
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey),
+                                  )),
                                 ),
                           Container(
                               padding: EdgeInsets.all(paddingDefault),

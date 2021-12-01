@@ -1,5 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
+
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
+final FirebaseAuth auth = FirebaseAuth.instance;
 
 class UbahPassword extends StatefulWidget {
   const UbahPassword({Key? key}) : super(key: key);

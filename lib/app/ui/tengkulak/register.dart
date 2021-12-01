@@ -22,9 +22,8 @@ class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  TextEditingController _userName = TextEditingController();
+  TextEditingController _fullname = TextEditingController();
   TextEditingController _username = TextEditingController();
-  TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
 
@@ -86,7 +85,7 @@ class _RegisterState extends State<Register> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextFormField(
-                              controller: _userName,
+                              controller: _fullname,
                               textInputAction: TextInputAction.next,
                               onEditingComplete: () => node.nextFocus(),
                               decoration: InputDecoration(
@@ -108,22 +107,6 @@ class _RegisterState extends State<Register> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return 'Masukkan Username';
-                                }
-                              },
-                            ),
-                            TextFormField(
-                              controller: _email,
-                              textInputAction: TextInputAction.next,
-                              keyboardType: TextInputType.emailAddress,
-                              onEditingComplete: () => node.nextFocus(),
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Masukkan Email';
-                                } else if (!value.contains('@')) {
-                                  return 'Email Salah';
                                 }
                               },
                             ),
@@ -188,9 +171,9 @@ class _RegisterState extends State<Register> {
                         // ignore: deprecated_member_use
                         child: RaisedButton(
                           onPressed: () async {
-                            final String fullname = _userName.text.trim();
+                            final String fullname = _fullname.text.trim();
                             final String username = _username.text.trim();
-                            final String email = _email.text.trim();
+                            final String email = '$username@gmail.com';
                             final String password = _password.text.trim();
                             final String phoneNumber = widget.phoneNumber;
                             try {
@@ -201,8 +184,7 @@ class _RegisterState extends State<Register> {
                               } else {
                                 context
                                     .read<AuthService>()
-                                    .signUp(fullname, username, email, password,
-                                        phoneNumber, title)
+                                    .signUp(fullname, username)
                                     .then((value) async {
                                   User? user =
                                       FirebaseAuth.instance.currentUser;
@@ -262,43 +244,6 @@ class _RegisterState extends State<Register> {
         )),
       ),
     );
-  }
-
-  Future register() async {
-    try {
-      UserCredential userCredential = await auth.createUserWithEmailAndPassword(
-          email: _email.text, password: _password.text);
-
-      // ignore: unnecessary_null_comparison
-      if (userCredential != null) {
-        await firestore.collection('tengkulak').doc(auth.currentUser!.uid).set({
-          'userId': auth.currentUser!.uid,
-          'jenis pengguna': title,
-          'nama lengkap': _userName.text.trim(),
-          'email': _email.text.trim(),
-          'nomor HP': widget.phoneNumber,
-          'password': _password.text.trim()
-        });
-
-        await firestore.collection('users').doc(auth.currentUser!.uid).set({
-          'userId': auth.currentUser!.uid,
-          'jenis pengguna': title,
-          'nama lengkap': _userName.text.trim(),
-          'email': _email.text.trim(),
-          'nomor HP': widget.phoneNumber,
-          'password': _password.text.trim()
-        });
-        successDialog();
-      }
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'week-password') {
-        print('The password provided is too week');
-      } else if (e.code == 'email-already-in-use') {
-        displaySnackbar();
-      }
-    } catch (e) {
-      print(e);
-    }
   }
 
   displaySnackbar() {

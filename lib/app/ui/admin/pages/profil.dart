@@ -5,8 +5,8 @@ import 'package:kakaoo/app/ui/constants.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-var userName;
-var email;
+var fullname;
+var username;
 var phoneNumber;
 
 class Profil extends StatefulWidget {
@@ -26,8 +26,8 @@ class _ProfilState extends State<Profil> {
           .then((result) {
         if (result.docs.length > 0) {
           setState(() {
-            userName = result.docs[0].data()['nama lengkap'];
-            email = result.docs[0].data()['email'];
+            fullname = result.docs[0].data()['nama lengkap'];
+            username = result.docs[0].data()['nama pengguna'];
             phoneNumber = result.docs[0].data()['nomor HP'];
           });
         }
@@ -78,7 +78,7 @@ class _ProfilState extends State<Profil> {
             SizedBox(
               height: 8,
             ),
-            Text("$userName",  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16),)
+            Text("$fullname",  style: TextStyle(fontWeight: FontWeight.w500, color: Colors.white, fontSize: 16),)
           ],
         ));
   }
@@ -97,10 +97,10 @@ class _ProfilState extends State<Profil> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    "Email",
+                    "Username",
                     style: TextStyle(fontWeight: FontWeight.w500),
                   ),
-                  Text("$email",  style: TextStyle(fontWeight: FontWeight.w500),)
+                  Text("$username",  style: TextStyle(fontWeight: FontWeight.w500),)
                 ],
               ),
             ),
