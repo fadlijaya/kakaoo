@@ -129,9 +129,11 @@ class _ProductState extends State<Product> {
         centerTitle: true,
         backgroundColor: AppColor().colorCreamy,
       ),
-      body: Container(
-        child: Column(
-          children: [itemProduct],
+      body: SingleChildScrollView(
+        child: Container(
+          child: Column(
+            children: [itemProduct],
+          ),
         ),
       ),
     );

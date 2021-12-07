@@ -141,12 +141,13 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                       // ignore: deprecated_member_use
                       child: RaisedButton(
                         onPressed: () async {
+                          final String username = _username.text.trim();
+                          final String email = '$username@gmail.com';
+                          final String password = _password.text.trim();
+
                           if (!isLoading) {
                             if (_formKey.currentState!.validate()) {
                               displaySnackBar('Mohon Tunggu..');
-
-                              final String username = _username.text.trim();
-                              final String password = _password.text.trim();
 
                               if (username.isEmpty) {
                                 print("Username is empty");
@@ -163,7 +164,8 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                                           .get();
 
                                   context.read<AuthService>().login(
-                                      snapshot.docs[0]['email'], password);
+                                      email: snapshot.docs[0]['email'],
+                                      password: password);
 
                                   Navigator.pushAndRemoveUntil(
                                     context,
@@ -174,28 +176,26 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                                     (route) => false,
                                   );
                                 } else {
-                                  QuerySnapshot snapshot =
-                                      await FirebaseFirestore.instance
-                                          .collection('tengkulak')
-                                          .where('nama pengguna',
-                                              isEqualTo: username)
-                                          .get();
+                                  try {
+                                    UserCredential user =
+                                        await auth.signInWithEmailAndPassword(
+                                            email: email, password: password);
 
-                                  if (snapshot.docs.isEmpty) {
-                                    displaySnackBar(
-                                        'Username dan Password Salah');
-                                  } else {
-                                    context.read<AuthService>().login(
-                                        snapshot.docs[0]['email'], password);
-
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            HomeTengkulak(),
-                                      ),
-                                      (route) => false,
-                                    );
+                                    if (user != null) {
+                                      Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  HomeTengkulak()),
+                                          (route) => false);
+                                    }
+                                  } on FirebaseAuthException catch (e) {
+                                    if (e.code == 'user-not-found') {
+                                      print('No user found for that email.');
+                                    } else if (e.code == 'wrong-password') {
+                                      print(
+                                          'Wrong password provided for that user.');
+                                    }
                                   }
                                 }
                               }

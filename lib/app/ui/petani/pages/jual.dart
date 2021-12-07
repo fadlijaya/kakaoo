@@ -31,14 +31,13 @@ class Jual extends StatefulWidget {
   final String desc;
   final String saleDate;
   final String? imageFile;
-
   final String location;
-  final double coordinateLat;
-  final double coordinateLon;
+  final GeoPoint coordinate;
 
   const Jual({
     Key? key,
     required this.isEdit,
+    required this.coordinate,
     this.documentId = '',
     this.unit = '',
     this.price = '',
@@ -48,8 +47,6 @@ class Jual extends StatefulWidget {
     this.saleDate = '',
     this.imageFile = '',
     this.location = '',
-    this.coordinateLat = 0.0,
-    this.coordinateLon = 0.0,
   }) : super(key: key);
 
   @override
@@ -107,8 +104,6 @@ class _JualState extends State<Jual> {
   void initState() {
     super.initState();
     if (widget.isEdit) {
-      _coordinateLat = widget.coordinateLat;
-      _coordinateLon = widget.coordinateLon;
       _location = widget.location;
       _title.text = widget.title;
       _desc.text = widget.desc;
@@ -122,7 +117,11 @@ class _JualState extends State<Jual> {
   }
 
   Future getUser() async {
-    await firestore.collection('petani').where('userId').get().then((result) {
+    await firestore
+        .collection('petani')
+        .where('userId', isEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((result) {
       if (result.docs.length > 0) {
         setState(() {
           typeUsers = result.docs[0].data()['jenis pengguna'];
@@ -461,7 +460,8 @@ class _JualState extends State<Jual> {
                 });
               } else {
                 if (_formKey.currentState!.validate()) {
-                  final docIdProduct = await firestore
+                  Future.delayed(Duration(seconds: 3), () async {
+                    final docIdProduct = await firestore
                       .collection('petani')
                       .doc(userId)
                       .collection('penjualan')
@@ -475,16 +475,16 @@ class _JualState extends State<Jual> {
                     'harga': _price.text,
                     'judul': _title.text,
                     'deskripsi': _desc.text,
-                    'posisi kordinat':
-                        GeoPoint(widget.coordinateLat, widget.coordinateLon),
+                    'posisi kordinat': widget.coordinate,
                     'tanggal jual': _saleDate.toString(),
                     'file foto': _imageUrl
                   });
-                  Navigator.push(
-                      context, MaterialPageRoute(builder: (context) => Home()));
+                   Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Home()));
 
                   firestore.collection('penjualan').doc(docIdProduct.id).set({
                     'docIdProduct': docIdProduct.id,
+                    'userId': userId,
                     'jenis pengguna': typeUsers,
                     'nama lengkap': fullname,
                     'nomor HP': phoneNumber,
@@ -494,14 +494,15 @@ class _JualState extends State<Jual> {
                     'harga': _price.text,
                     'judul': _title.text,
                     'deskripsi': _desc.text,
-                    'posisi kordinat':
-                        GeoPoint(widget.coordinateLat, widget.coordinateLon),
+                    'posisi kordinat': widget.coordinate,
                     'tanggal jual': _saleDate.toString(),
                     'file foto': _imageUrl
                   }).then((value) => {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) => Home()))
                       });
+                  });
+                  
                 }
               }
             },

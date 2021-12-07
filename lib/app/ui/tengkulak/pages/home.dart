@@ -347,9 +347,9 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Detail(
-                                    tengkulakAddress:
-                                        _currentAddress.toString(),
+                                    tengkulakAddress: _currentAddress.toString(),
                                     docIdProduct: document['docIdProduct'],
+                                    userIdPetani: document['userId'],
                                     typeUsers: document['jenis pengguna'],
                                     fullname: document['nama lengkap'],
                                     phoneNumber: document['nomor HP'],

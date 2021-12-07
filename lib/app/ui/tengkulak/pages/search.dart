@@ -68,6 +68,7 @@ class CustomSearchDelegate extends SearchDelegate {
                                 builder: (context) => Detail(
                                     tengkulakAddress: '',
                                     docIdProduct: doc['docIdProduct'],
+                                    userIdPetani: doc['userId'],
                                     typeUsers: doc['jenis pengguna'],
                                     fullname: doc['nama lengkap'],
                                     phoneNumber: doc['nomor HP'],

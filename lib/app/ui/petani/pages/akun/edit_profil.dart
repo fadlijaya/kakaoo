@@ -12,7 +12,7 @@ class EditProfil extends StatefulWidget {
   final String phoneNumber;
   final String fullName;
   final String username;
-  final String password;
+  final String email;
 
   const EditProfil({
     Key? key,
@@ -21,7 +21,7 @@ class EditProfil extends StatefulWidget {
     this.phoneNumber = '',
     this.fullName = '',
     this.username = '',
-    this.password = '',
+    this.email = '',
   }) : super(key: key);
 
   @override
@@ -35,6 +35,7 @@ class _EditProfilState extends State<EditProfil> {
   TextEditingController _username = TextEditingController();
   TextEditingController _phoneNumber = TextEditingController();
   TextEditingController _password = TextEditingController();
+  TextEditingController _email = TextEditingController();
 
   bool isLoading = false;
   bool isHidePassword = true;
@@ -52,7 +53,7 @@ class _EditProfilState extends State<EditProfil> {
         _fullName.text = widget.fullName;
         _username.text = widget.username;
         _phoneNumber.text = widget.phoneNumber;
-        _password.text = widget.password;
+        _email.text = widget.email;
       });
     }
     super.initState();
@@ -132,6 +133,20 @@ class _EditProfilState extends State<EditProfil> {
                     }
                   },
                 ),
+                TextFormField(
+                  controller: _email,
+                  keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
+                  onEditingComplete: () => node.nextFocus(),
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Masukkan Email';
+                    }
+                  },
+                ),
                 SizedBox(
                   height: 32.0,
                 ),
@@ -151,41 +166,6 @@ class _EditProfilState extends State<EditProfil> {
                   validator: (value) {
                     if (value!.isEmpty) {
                       return 'Masukkan Nomor HP';
-                    }
-                  },
-                ),
-                SizedBox(
-                  height: 32.0,
-                ),
-                Text(
-                  'Kata Sandi',
-                  style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w500),
-                ),
-                SizedBox(
-                  height: 12.0,
-                ),
-                TextFormField(
-                  obscureText: isHidePassword,
-                  textInputAction: TextInputAction.done,
-                  onEditingComplete: () => node.nextFocus(),
-                  controller: _password,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                     suffixIcon: GestureDetector(
-                        onTap: () {
-                          togglePasswordVisibility();
-                        },
-                        child: Icon(
-                            isHidePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: isHidePassword
-                                ? Colors.grey
-                                : AppColor().colorChocolate),
-                      )),
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Masukkan Password';
                     }
                   },
                 ),
@@ -214,7 +194,7 @@ class _EditProfilState extends State<EditProfil> {
               'nama lengkap': _fullName.text,
               'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
-              'password': _password.text
+              'email': _email.text
             },
           );
         }
@@ -233,7 +213,7 @@ class _EditProfilState extends State<EditProfil> {
               'nama lengkap': _fullName.text,
               'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
-              'password': _password.text
+              'email': _email.text
             },
           );
         }

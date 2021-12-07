@@ -12,6 +12,7 @@ import 'package:kakaoo/app/ui/tengkulak/pages/rute.dart';
 class Detail extends StatefulWidget {
   final String tengkulakAddress;
   final String docIdProduct;
+  final String userIdPetani;
   final String typeUsers;
   final String fullname;
   final String phoneNumber;
@@ -29,6 +30,7 @@ class Detail extends StatefulWidget {
     Key? key,
     required this.tengkulakAddress,
     required this.docIdProduct,
+    required this.userIdPetani,
     required this.typeUsers,
     required this.fullname,
     required this.phoneNumber,
@@ -48,6 +50,7 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  String get imageFile => widget.imageFile;
   Completer<GoogleMapController> _mapController = Completer();
   PersistentBottomSheetController? _sheetController;
   final _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -82,7 +85,7 @@ class _DetailState extends State<Detail> {
                                   height: 200,
                                   child: ClipRRect(
                                     child: Image.network(
-                                      widget.imageFile,
+                                      '$imageFile',
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -514,6 +517,7 @@ class _DetailState extends State<Detail> {
                       MaterialPageRoute(
                           builder: (context) => Pesanan(
                                 docIdProduct: widget.docIdProduct,
+                                userIdPetani: widget.userIdPetani,
                                 imageFile: widget.imageFile,
                                 title: widget.title,
                                 price: widget.price,

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
@@ -217,10 +218,8 @@ class _MapPickState extends State<MapPick> {
                           MaterialPageRoute(
                               builder: (context) => Jual(
                                     isEdit: false,
-                                    
                                     location: _textEditingController.text,
-                                    coordinateLat: cameraPosition.target.latitude,
-                                    coordinateLon: cameraPosition.target.longitude,
+                                    coordinate: GeoPoint(cameraPosition.target.latitude, cameraPosition.target.longitude),
                                   )));
                       print("Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
                       print("Address: ${_textEditingController.text}");

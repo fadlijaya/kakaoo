@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/pages/beranda/detail_kakao.dart';
 import 'package:kakaoo/app/ui/petani/pages/beranda/item_slider.dart';
+import 'package:kakaoo/app/ui/petani/pages/beranda/notifikasi.dart';
 import 'package:kakaoo/app/ui/petani/pages/jual.dart';
 
 final List itemList = [ItemSlider1(), ItemSliders2()];
@@ -22,12 +23,6 @@ int _currentIndex = 0;
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
-final User? userAuth = auth.currentUser;
-var typeUsers;
-var fullname;
-var username;
-var phoneNumber;
-String? userId;
 
 class Kakao extends StatefulWidget {
   const Kakao({
@@ -38,21 +33,6 @@ class Kakao extends StatefulWidget {
 }
 
 class _KakaoState extends State<Kakao> {
-  Future getUser() async {
-    await firestore.collection('petani').where('userId').get().then((result) { 
-      if (result.docs.length > 0) {
-        setState(() {
-          userId = result.docs[0].data()['userId'];
-        });
-      }
-    });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getUser();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,14 +50,24 @@ class _KakaoState extends State<Kakao> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Text(
-                'Kakaoo',
-                style: TextStyle(
-                    color: AppColor().colorChocolate,
-                    fontSize: 20.0,
-                    fontWeight: FontWeight.bold),
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: paddingDefault),
+                  child: Text(
+                    'Kakaoo',
+                    style: TextStyle(
+                        color: AppColor().colorChocolate,
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: paddingDefault),
+                  child: IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Notifikasi(userId: auth.currentUser!.uid))), icon: Icon(Icons.notifications, color: Colors.black54,)),
+                )
+              ],
             ),
             SizedBox(height: 24.0),
             CarouselSlider(
@@ -134,7 +124,7 @@ class _KakaoState extends State<Kakao> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: firestore
                             .collection('petani')
-                            .doc(userId)
+                            .doc(auth.currentUser!.uid)
                             .collection('penjualan')
                             .snapshots(),
                         builder: (BuildContext context,
@@ -258,6 +248,7 @@ class _KakaoState extends State<Kakao> {
                                                                   document
                                                                       .reference
                                                                       .id,
+                                                              coordinate: document['posisi kordinat'],
                                                               location:
                                                                   document[
                                                                       'alamat'],

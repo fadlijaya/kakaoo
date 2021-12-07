@@ -35,7 +35,7 @@ class _LoginPetaniState extends State<LoginPetani> {
 
   @override
   void initState() {
-    /*if (auth.currentUser != null) {
+    if (auth.currentUser != null) {
       WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
         Navigator.pushAndRemoveUntil(
           context,
@@ -45,7 +45,7 @@ class _LoginPetaniState extends State<LoginPetani> {
           (route) => false,
         );
       });
-    }*/
+    }
     super.initState();
   }
 
@@ -139,44 +139,8 @@ class _LoginPetaniState extends State<LoginPetani> {
                           borderRadius: BorderRadius.circular(8.0)),
                       // ignore: deprecated_member_use
                       child: RaisedButton(
-                        onPressed: () async {
-                          if (!isLoading) {
-                            if (_formKey.currentState!.validate()) {
-                              displaySnackBar('Mohon Tunggu..');
-
-                              final String username = _username.text.trim();
-                              final String password = _password.text.trim();
-
-                              if (username.isEmpty) {
-                                print("Username is empty");
-                              } else if (password.isEmpty) {
-                                print("Password is empty");
-                              } else {
-                                QuerySnapshot snapshot = await FirebaseFirestore
-                                    .instance
-                                    .collection('petani')
-                                    .where('nama pengguna', isEqualTo: username)
-                                    .get();
-
-                                if (snapshot.docs.isEmpty) {
-                                  displaySnackBar(
-                                      'Username dan Password Salah');
-                                } else {
-                                  context.read<AuthService>().login(
-                                        snapshot.docs[0]['email'], password);
-
-                                    Navigator.pushAndRemoveUntil(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (BuildContext context) =>
-                                            Home(),
-                                      ),
-                                      (route) => false,
-                                    );
-                                }
-                              }
-                            }
-                          }
+                        onPressed: () {
+                          login();
                         },
                         color: AppColor().colorCreamy,
                         child: Container(
@@ -220,6 +184,36 @@ class _LoginPetaniState extends State<LoginPetani> {
         ),
       )),
     );
+  }
+
+  login() async {
+    final String username = _username.text.trim();
+    final String email = '$username@gmail.com';
+    final String password = _password.text.trim();
+
+    if (!isLoading) {
+      if (_formKey.currentState!.validate()) {
+        displaySnackBar('Mohon Tunggu..');
+
+        try {
+          UserCredential user = await auth.signInWithEmailAndPassword(
+              email: email, password: password);
+
+          if (user != null) {
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(builder: (context) => Home()),
+                (route) => false);
+          }
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'user-not-found') {
+            print('No user found for that email.');
+          } else if (e.code == 'wrong-password') {
+            print('Wrong password provided for that user.');
+          }
+        }
+      }
+    }
   }
 
   displaySnackBar(text) {

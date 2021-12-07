@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/pages/akun/akun.dart';
@@ -87,6 +88,7 @@ class _CategoriesState extends State<Categories> {
                       MaterialPageRoute(
                           builder: (context) => Jual(
                                 isEdit: false,
+                                coordinate: GeoPoint(0, 0),
                               ))),
                   child: Container(
                     height: 48,

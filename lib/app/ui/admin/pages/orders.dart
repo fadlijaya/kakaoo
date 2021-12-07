@@ -91,6 +91,10 @@ class _OrdersState extends State<Orders> {
                                       MaterialPageRoute(
                                           builder: (context) => Detail(
                                               isChecked: isChecked,
+                                              docIdProduct:
+                                                  document['docIdProduct'],
+                                              orderDate:
+                                                  document['tanggal pesanan'],
                                               imageFile: document['file foto'],
                                               title: document['judul'],
                                               price: document['harga'],
@@ -102,8 +106,8 @@ class _OrdersState extends State<Orders> {
                                                   document['nama lengkap'],
                                               ordersPhoneNumber:
                                                   document['nomor HP'],
-                                              ordersUsername: document['nama pengguna']
-                                              )));
+                                              ordersUsername:
+                                                  document['nama pengguna'])));
                                 } else if (value == 'hapus') {
                                   showDialog(
                                       context: context,
@@ -143,6 +147,8 @@ class _OrdersState extends State<Orders> {
 
 class Detail extends StatefulWidget {
   final bool isChecked;
+  final String docIdProduct;
+  final String orderDate;
   final String imageFile;
   final String title;
   final String price;
@@ -164,7 +170,9 @@ class Detail extends StatefulWidget {
       required this.paymentFile,
       required this.ordersName,
       required this.ordersPhoneNumber,
-      required this.ordersUsername})
+      required this.ordersUsername,
+      required this.docIdProduct,
+      required this.orderDate})
       : super(key: key);
 
   @override
@@ -192,6 +200,20 @@ class _DetailState extends State<Detail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            Text('${widget.orderDate}'),
+          ]),
+          SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [Text('K-${widget.docIdProduct}')],
+          ),
+          Divider(
+            thickness: 1,
+          ),
+          SizedBox(
+            height: 8,
+          ),
           Text("Pemesan",
               style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w500)),
           SizedBox(

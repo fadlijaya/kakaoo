@@ -203,7 +203,7 @@ class _RegisterState extends State<Register> {
                             } else {
                               context
                                   .read<AuthService>()
-                                  .signUp(fullname, username)
+                                  .signUp(email: email, password: password)
                                   .then((value) async {
                                 User? user = FirebaseAuth.instance.currentUser;
 

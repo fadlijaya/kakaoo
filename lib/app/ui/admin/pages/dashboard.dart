@@ -27,7 +27,7 @@ final Stream<QuerySnapshot> product =
 final Stream<QuerySnapshot> orders =
     FirebaseFirestore.instance.collection('pesanan').snapshots();
 final Stream<QuerySnapshot> transaksi =
-    FirebaseFirestore.instance.collection('terjual').snapshots();
+    FirebaseFirestore.instance.collection('pesanan').snapshots();
 final Stream<QuerySnapshot> users = FirebaseFirestore.instance
     .collection('users')
     .snapshots();

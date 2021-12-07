@@ -18,6 +18,7 @@ var phoneNumber;
 
 class Pesanan extends StatefulWidget {
   final String docIdProduct;
+  final String userIdPetani;
   final String imageFile;
   final String title;
   final String price;
@@ -26,6 +27,7 @@ class Pesanan extends StatefulWidget {
   const Pesanan(
       {Key? key,
       required this.docIdProduct,
+      required this.userIdPetani,
       required this.imageFile,
       required this.title,
       required this.price,
@@ -52,7 +54,7 @@ class _PesananState extends State<Pesanan> {
   Future getUser() async {
     await firestore
         .collection('tengkulak')
-        .where('userId')
+        .where('userId', isEqualTo: auth.currentUser!.uid)
         .get()
         .then((result) {
       if (result.docs.length > 0) {
@@ -67,6 +69,8 @@ class _PesananState extends State<Pesanan> {
 
   @override
   Widget build(BuildContext context) {
+    DateTime now = DateTime.now();
+    String formatedDate = DateFormat('dd-MM-yyyy - kk:mm').format(now);
     var totalPay = int.parse(widget.price) * widget.itemCount;
 
     return Scaffold(
@@ -273,6 +277,8 @@ class _PesananState extends State<Pesanan> {
                           if (_formKey.currentState!.validate()) {
                             await firestore.collection('pesanan').add({
                               'docIdProduct': widget.docIdProduct,
+                              'userId': widget.userIdPetani,
+                              'tanggal pesanan': formatedDate,
                               'nama lengkap': fullname,
                               'nama pengguna': username,
                               'nomor HP': phoneNumber,

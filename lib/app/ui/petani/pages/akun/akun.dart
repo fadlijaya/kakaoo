@@ -4,17 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/pages/akun/edit_profil.dart';
-import 'package:kakaoo/app/ui/petani/pages/akun/pengaturan/pengaturan.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
+// ignore: implementation_imports
 import 'package:provider/src/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 var fullname;
 var username;
-var password;
 var phoneNumber;
-String? userId;
+var email;
 
 class Akun extends StatefulWidget {
   const Akun({
@@ -26,6 +25,8 @@ class Akun extends StatefulWidget {
 }
 
 class _AkunState extends State<Akun> {
+  String? userId;
+
   @override
   void initState() {
     getUser();
@@ -33,13 +34,13 @@ class _AkunState extends State<Akun> {
   }
 
   Future getUser() async {
-    await firestore.collection('petani').where('email').get().then((result) {
+    await firestore.collection('petani').where('userId', isEqualTo: auth.currentUser!.uid).get().then((result) {
       if (result.docs.length > 0) {
         setState(() {
           fullname = result.docs[0].data()['nama lengkap'];
           username = result.docs[0].data()['nama pengguna'];
-          password = result.docs[0].data()['password'];
           phoneNumber = result.docs[0].data()['nomor HP'];
+          email = result.docs[0].data()['email'];
           userId = result.docs[0].data()['userId'];
         });
       }
@@ -102,7 +103,7 @@ class _AkunState extends State<Akun> {
                                       fullName: fullname,
                                       username: username,
                                       phoneNumber: phoneNumber,
-                                      password: password,
+                                      email: email
                                     )));
                       },
                       child: Text('Edit Profil'))

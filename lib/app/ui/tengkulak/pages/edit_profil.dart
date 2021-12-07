@@ -12,6 +12,7 @@ class EditProfil extends StatefulWidget {
   final String phoneNumber;
   final String fullname;
   final String username;
+  final String email;
 
   const EditProfil({
     Key? key,
@@ -20,6 +21,7 @@ class EditProfil extends StatefulWidget {
     this.phoneNumber = '',
     this.fullname = '',
     this.username = '',
+    this.email = '',
   }) : super(key: key);
 
   @override
@@ -31,6 +33,7 @@ class _EditProfilState extends State<EditProfil> {
 
   TextEditingController _fullname = TextEditingController();
   TextEditingController _username = TextEditingController();
+  TextEditingController _email = TextEditingController();
   TextEditingController _phoneNumber = TextEditingController();
 
   bool isLoading = false;
@@ -41,6 +44,7 @@ class _EditProfilState extends State<EditProfil> {
       _fullname.text = widget.fullname;
       _username.text = widget.username;
       _phoneNumber.text = widget.phoneNumber;
+      _email.text = widget.email;
     }
     super.initState();
   }
@@ -118,6 +122,20 @@ class _EditProfilState extends State<EditProfil> {
                   }
                 },
               ),
+              TextFormField(
+                controller: _email,
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                onEditingComplete: () => node.nextFocus(),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                ),
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return 'Masukkan Email';
+                  }
+                },
+              ),
               SizedBox(
                 height: 32.0,
               ),
@@ -167,6 +185,7 @@ class _EditProfilState extends State<EditProfil> {
               'nama lengkap': _fullname.text,
               'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
+              'email': _email.text
             },
           );
         }
@@ -185,6 +204,7 @@ class _EditProfilState extends State<EditProfil> {
               'nama lengkap': _fullname.text,
               'nama pengguna': _username.text,
               'nomor HP': _phoneNumber.text,
+              'email': _email.text
             },
           );
         }

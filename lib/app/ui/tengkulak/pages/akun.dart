@@ -1,15 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/edit_profil.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
+// ignore: implementation_imports
+import 'package:provider/src/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 var fullname;
 var phoneNumber;
 var username;
+var email;
 String? userId;
 
 class Akun extends StatefulWidget {
@@ -30,7 +34,7 @@ class _AkunState extends State<Akun> {
   Future getUser() async {
     await firestore
         .collection('tengkulak')
-        .where('userId')
+        .where('userId', isEqualTo: auth.currentUser!.uid)
         .get()
         .then((result) {
       if (result.docs.length > 0) {
@@ -38,6 +42,7 @@ class _AkunState extends State<Akun> {
           fullname = result.docs[0].data()['nama lengkap'];
           phoneNumber = result.docs[0].data()['nomor HP'];
           username = result.docs[0].data()['nama pengguna'];
+          email = result.docs[0].data()['email'];
           userId = result.docs[0].data()['userId'];
         });
       }
@@ -119,12 +124,12 @@ class _AkunState extends State<Akun> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => EditProfil(
-                                      isEdit: true,
-                                      documentId: userId.toString(),
-                                      fullname: fullname,
-                                      username: username,
-                                      phoneNumber: phoneNumber,
-                                    )));
+                                    isEdit: true,
+                                    documentId: userId.toString(),
+                                    fullname: fullname,
+                                    username: username,
+                                    phoneNumber: phoneNumber,
+                                    email: email)));
                       },
                       child: Text(
                         'Edit Profil',
@@ -187,15 +192,19 @@ class _AkunState extends State<Akun> {
                 child: Container(
               margin: EdgeInsets.symmetric(vertical: 16.0, horizontal: 16.0),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.exit_to_app,
-                    color: AppColor().colorChocolate,
+                    color: Colors.red,
                   ),
                   SizedBox(
                     width: 12.0,
                   ),
-                  Text('Keluar')
+                  Text(
+                    'Keluar',
+                    style: TextStyle(color: Colors.red),
+                  )
                 ],
               ),
             )),
@@ -232,7 +241,7 @@ class _AkunState extends State<Akun> {
   }
 
   Future<void> signOut() async {
-    await FirebaseAuth.instance.signOut();
+    await context.read<AuthService>().signOut();
     Navigator.pushAndRemoveUntil(context,
         MaterialPageRoute(builder: (context) => UserLogin()), (route) => false);
   }

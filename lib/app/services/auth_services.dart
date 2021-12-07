@@ -7,7 +7,7 @@ class AuthService {
 
   Stream<User?> get authStateChanges => auth.idTokenChanges();
 
-  Future<String> login(String email, String password) async {
+  Future<String> login({required String email, required String password}) async {
     try {
       await auth.signInWithEmailAndPassword(email: email, password: password);
       return "Logged In";
@@ -16,7 +16,7 @@ class AuthService {
     }
   }
 
-  Future<String> signUp(String email, String password) async {
+  Future<String> signUp({required String email, required String password}) async {
     try {
       await auth.createUserWithEmailAndPassword(
           email: email, password: password);
