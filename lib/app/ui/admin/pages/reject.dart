@@ -5,19 +5,18 @@ import 'package:intl/intl.dart';
 
 import '../../constants.dart';
 
-final Stream<QuerySnapshot> transaksi =
-    FirebaseFirestore.instance.collection("transaksi").snapshots();
+final Stream<QuerySnapshot> transaksi = FirebaseFirestore.instance.collection("penolakan").snapshots();
 final FirebaseAuth auth = FirebaseAuth.instance;
 
-class Transaksi extends StatefulWidget {
-  const Transaksi({Key? key}) : super(key: key);
+class Reject extends StatefulWidget {
+  const Reject({Key? key}) : super(key: key);
 
   @override
-  _TransaksiState createState() => _TransaksiState();
+  _RejectState createState() => _RejectState();
 }
 
-class _TransaksiState extends State<Transaksi> {
-  final String title = "Transaksi";
+class _RejectState extends State<Reject> {
+  final String title = "Penolakan";
   bool isChecked = false;
 
   @override
@@ -28,11 +27,11 @@ class _TransaksiState extends State<Transaksi> {
         centerTitle: true,
         backgroundColor: AppColor().colorCreamy,
       ),
-      body: listTransaksi(),
+      body: listReject(),
     );
   }
 
-  listTransaksi() {
+  listReject() {
     return Container(
       child: StreamBuilder<QuerySnapshot>(
           stream: transaksi,
@@ -53,7 +52,7 @@ class _TransaksiState extends State<Transaksi> {
 
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => Detail(
@@ -158,7 +157,7 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
-  final String title = "Detail Transaksi";
+  final String title = "Detail Penolakan";
 
   @override
   Widget build(BuildContext context) {
@@ -170,16 +169,21 @@ class _DetailState extends State<Detail> {
       ),
       body: SingleChildScrollView(
         child: Container(
-            padding: EdgeInsets.all(paddingDefault), child: detailTransaksi()),
+            padding: EdgeInsets.all(paddingDefault), child: detailReject()),
       ),
     );
   }
 
-  detailTransaksi() {
+  detailReject() {
     return Container(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Container(
+            width: double.infinity,
+            height: 48,
+            alignment: Alignment.center,
+            child: Icon(Icons.close_rounded, size: 40, color: Colors.red,)),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             Text('${widget.orderDate}'),
           ]),
@@ -187,7 +191,7 @@ class _DetailState extends State<Detail> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Telah Diterima', style: TextStyle(color: Colors.black54),),
+              Text('Ditolak', style: TextStyle(color: Colors.black54),),
               Text('Pesanan K-${widget.docIdProduct}')],
           ),
           Divider(

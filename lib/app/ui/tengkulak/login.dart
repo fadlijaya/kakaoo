@@ -85,7 +85,7 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                   SizedBox(
                     height: 12.0,
                   ),
-                  Text('Silahkan masuk dengan Akun Tengkulak\nyang terdaftar')
+                  Text('Silahkan masuk dengan Akun Pengepul\nyang terdaftar')
                 ],
               ),
               SizedBox(
@@ -181,6 +181,7 @@ class _LoginTengkulakState extends State<LoginTengkulak> {
                                         await auth.signInWithEmailAndPassword(
                                             email: email, password: password);
 
+                                    // ignore: unnecessary_null_comparison
                                     if (user != null) {
                                       Navigator.pushAndRemoveUntil(
                                           context,

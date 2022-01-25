@@ -200,13 +200,20 @@ class _DetailState extends State<Detail> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text('Waktu Pesanan', style: TextStyle(color: Colors.black54)),
             Text('${widget.orderDate}'),
           ]),
           SizedBox(height: 4),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [Text('K-${widget.docIdProduct}')],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Kode Pesanan',
+                  style: TextStyle(
+                    color: Colors.black54,
+                  )),
+              Text('K-${widget.docIdProduct}')
+            ],
           ),
           Divider(
             thickness: 1,

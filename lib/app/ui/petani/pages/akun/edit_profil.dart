@@ -34,7 +34,6 @@ class _EditProfilState extends State<EditProfil> {
   TextEditingController _fullName = TextEditingController();
   TextEditingController _username = TextEditingController();
   TextEditingController _phoneNumber = TextEditingController();
-  TextEditingController _password = TextEditingController();
   TextEditingController _email = TextEditingController();
 
   bool isLoading = false;

@@ -59,6 +59,8 @@ class _DetailState extends State<Detail> {
     _mapController.complete(_controller);
   }
 
+  final TextEditingController _controllerPrice = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     final int harga = int.parse(widget.price);
@@ -258,6 +260,7 @@ class _DetailState extends State<Detail> {
                                       builder: (context) => LihatProfil(
                                             fullname: widget.fullname,
                                             location: widget.location,
+                                            coordinate: widget.coordinate,
                                             phoneNumber: widget.phoneNumber,
                                           ))),
                               child: Container(
@@ -332,16 +335,34 @@ class _DetailState extends State<Detail> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        GestureDetector(
+                          onTap: bottomSheetBuy,
+                          child: Container(
+                            width: 100,
+                            padding: EdgeInsets.all(paddingDefault),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8.0),
+                                color: AppColor().colorChocolate),
+                            child: Center(
+                                child: Text('BELI',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.white))),
+                          ),
+                        ),
+                        SizedBox(
+                          width: 4.0,
+                        ),
                         Expanded(
                           child: GestureDetector(
-                            onTap: () => bottomSheetBuy(),
+                            onTap: bottomSheetOffer,
                             child: Container(
                               padding: EdgeInsets.all(paddingDefault),
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(8.0),
-                                  color: AppColor().colorChocolate),
+                                  color: AppColor().colorCreamy),
                               child: Center(
-                                  child: Text('Beli',
+                                  child: Text('BUAT PENAWARAN',
                                       style: TextStyle(
                                           fontWeight: FontWeight.w500,
                                           color: Colors.white))),
@@ -349,10 +370,9 @@ class _DetailState extends State<Detail> {
                           ),
                         ),
                         SizedBox(
-                          width: 8.0,
+                          width: 4,
                         ),
-                        Expanded(
-                            child: GestureDetector(
+                        GestureDetector(
                           onTap: () => Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -361,18 +381,20 @@ class _DetailState extends State<Detail> {
                                       location: widget.location,
                                       coordinate: widget.coordinate))),
                           child: Container(
+                            width: 70,
                             padding: EdgeInsets.all(paddingDefault),
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8.0),
-                                color: AppColor().colorCreamy),
+                                color: Colors.blue),
                             child: Center(
-                              child: Text('Rute',
+                              child: Text('RUTE',
                                   style: TextStyle(
+                                    color: Colors.white,
                                     fontWeight: FontWeight.w500,
                                   )),
                             ),
                           ),
-                        )),
+                        ),
                       ],
                     ),
                   ))
@@ -394,7 +416,7 @@ class _DetailState extends State<Detail> {
     ].toSet();
   }
 
-  int _itemCount = 1;
+  int _itemCount = 5;
 
   void incrementBottomSheet() {
     _sheetController!.setState!(() {
@@ -415,17 +437,14 @@ class _DetailState extends State<Detail> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                GestureDetector(
-                    onTap: () => Navigator.pop(context),
-                    child: Icon(
-                      Icons.close,
-                      color: Colors.grey,
-                    )),
-              ],
+            Container(
+              width: 48,
+              height: 8,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.grey, borderRadius: BorderRadius.circular(4)),
             ),
+            SizedBox(height: 12),
             Row(
               children: [
                 ClipRRect(
@@ -450,9 +469,23 @@ class _DetailState extends State<Detail> {
                     SizedBox(
                       height: 12.0,
                     ),
-                    Text('Stok : ${widget.stock}'.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500, color: Colors.grey)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text('Stok : ${widget.stock}'.toString(),
+                            style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey)),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Text(
+                          widget.unit,
+                          style: TextStyle(
+                              color: Colors.grey, fontWeight: FontWeight.w500),
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -474,11 +507,11 @@ class _DetailState extends State<Detail> {
                 Container(
                   decoration:
                       BoxDecoration(border: Border.all(color: Colors.black12)),
-                  child: _itemCount != 0
+                  child: _itemCount > 5
                       ? IconButton(
                           constraints:
                               BoxConstraints(minHeight: 24.0, minWidth: 24.0),
-                          onPressed: () => {decrementBottomSheet()},
+                          onPressed: decrementBottomSheet,
                           icon: Icon(
                             Icons.remove,
                             color: Colors.black54,
@@ -498,9 +531,21 @@ class _DetailState extends State<Detail> {
                   child: IconButton(
                       constraints:
                           BoxConstraints(minHeight: 24.0, minWidth: 24.0),
-                      onPressed: () => {incrementBottomSheet()},
+                      onPressed: () => {
+                            if (_itemCount < widget.stock)
+                              {
+                                incrementBottomSheet(),
+                              }
+                          },
                       icon: Icon(Icons.add, color: Colors.black54)),
                 )
+              ],
+            ),
+            SizedBox(height: 8,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text('Minimum Pembelian 5 Kilogram/Liter', style: TextStyle(color: Colors.black54, fontSize: 12)),
               ],
             ),
             SizedBox(
@@ -521,10 +566,11 @@ class _DetailState extends State<Detail> {
                                 imageFile: widget.imageFile,
                                 title: widget.title,
                                 price: widget.price,
+                                stock: widget.stock,
                                 itemCount: _itemCount,
                               ))),
                   child: Text(
-                    'Beli Sekarang',
+                    'BELI SEKARANG',
                     style: TextStyle(color: Colors.white),
                   )),
             )
@@ -532,5 +578,64 @@ class _DetailState extends State<Detail> {
         ),
       ),
     );
+  }
+
+  bottomSheetOffer() {
+    _controllerPrice.text = widget.price;
+
+    _sheetController =
+        _scaffoldKey.currentState!.showBottomSheet((context) => Container(
+              padding: EdgeInsets.all(paddingDefault), 
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Container(
+                  width: 48,
+                  height: 8,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                      color: Colors.grey,
+                      borderRadius: BorderRadius.circular(4)),
+                ),
+                SizedBox(height: paddingDefault),
+                Row(
+                  children: [
+                    Text('Buat Penawaran',
+                        style: TextStyle(fontSize: 20, color: Colors.black54)),
+                  ],
+                ),
+                SizedBox(
+                  height: paddingDefault,
+                ),
+                Row(
+                  children: [
+                    Text('Rp ', style: TextStyle(fontSize: 40)),
+                    Container(
+                      width: 200,
+                      height: 48,
+                      child: TextFormField(
+                        controller: _controllerPrice,
+                        decoration: InputDecoration(labelText: ''),
+                        textInputAction: TextInputAction.done,
+                        keyboardType: TextInputType.number,
+                        style: TextStyle(fontSize: 40),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  height: 24,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    ElevatedButton(
+                        onPressed: () {},
+                        child: Text('Kirim'),
+                        style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all( 
+                                AppColor().colorChocolate))),
+                  ],
+                )
+              ]),
+            ));
   }
 }

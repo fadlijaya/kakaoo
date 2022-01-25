@@ -10,8 +10,7 @@ import 'package:kakaoo/app/ui/tengkulak/pages/akun.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/detail.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/search.dart';
 
-final Stream<QuerySnapshot> listProduct =
-    FirebaseFirestore.instance.collection('penjualan').snapshots();
+final Stream<QuerySnapshot> listProduct = FirebaseFirestore.instance.collection('penjualan').snapshots();
 
 class HomeTengkulak extends StatefulWidget {
   const HomeTengkulak({
@@ -61,20 +60,28 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
             child: _currentAddress != null
-                ? Row(
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(
-                        Icons.location_on,
-                        color: AppColor().colorChocolate,
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            color: AppColor().colorChocolate,
+                          ),
+                          Flexible(
+                            child: Text(
+                              _currentAddress,
+                              style: TextStyle(
+                                  color: AppColor().colorChocolate,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ],
                       ),
-                      Flexible(
-                        child: Text(
-                          _currentAddress,
-                          style: TextStyle(
-                              color: AppColor().colorChocolate,
-                              fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                      SizedBox(height: 4),
+                      Text('Lat: ${_currentPosition.latitude}, Long: ${_currentPosition.longitude}', 
+                      style: TextStyle(fontSize: 12, color: Colors.black54),)
                     ],
                   )
                 : GestureDetector(
@@ -254,7 +261,7 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8.0),
                         border: Border.all(color: Colors.black12)),
-                    height: 250.0,
+                    height: 256.0,
                     child: GestureDetector(
                       child: Column(
                         children: [
@@ -297,17 +304,18 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                                       ),
                                     ],
                                   ),
-                                  Text(
-                                    '${document['judul']}',
-                                    style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold),
-                                  ),
                                   Text(NumberFormat.currency(
                                           locale: 'id',
                                           symbol: 'Rp ',
                                           decimalDigits: 0)
-                                      .format(harga)),
+                                      .format(harga), style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold),),
+                                  SizedBox(height: 8,),
+                                  Text(
+                                    '${document['judul']}',
+                                  ),
+                                  
                                   SizedBox(
                                     height: 12.0,
                                   ),
@@ -347,7 +355,8 @@ class _HomeTengkulakState extends State<HomeTengkulak> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => Detail(
-                                    tengkulakAddress: _currentAddress.toString(),
+                                    tengkulakAddress:
+                                        _currentAddress.toString(),
                                     docIdProduct: document['docIdProduct'],
                                     userIdPetani: document['userId'],
                                     typeUsers: document['jenis pengguna'],

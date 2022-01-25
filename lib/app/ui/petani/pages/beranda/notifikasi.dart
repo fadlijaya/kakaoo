@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:kakaoo/app/ui/admin/pages/orders.dart';
 import 'package:kakaoo/app/ui/constants.dart';
+import 'package:kakaoo/app/ui/tengkulak/register.dart';
 
-final Stream<QuerySnapshot> orders =
-    FirebaseFirestore.instance.collection("pesanan").snapshots();
+final Stream<QuerySnapshot> orders = FirebaseFirestore.instance.collection("pesanan").snapshots();
 final FirebaseAuth auth = FirebaseAuth.instance;
 
 class Notifikasi extends StatefulWidget {
@@ -19,6 +20,35 @@ class Notifikasi extends StatefulWidget {
 
 class _NotifikasiState extends State<Notifikasi> {
   bool isChecked = false;
+  bool isVisibleDone = false;
+  bool isVisibleConfirm = true;
+  String? fullname;
+  String? username;
+  String? phoneNumber;
+  String? email;
+
+  Future<void> getUser() async {
+    await firestore
+        .collection('petani')
+        .where('userId', isEqualTo: auth.currentUser!.uid)
+        .get()
+        .then((result) {
+      if (result.docs.length > 0) {
+        setState(() {
+          fullname = result.docs[0].data()['nama lengkap'];
+          username = result.docs[0].data()['nama pengguna'];
+          phoneNumber = result.docs[0].data()['nomor HP'];
+          email = result.docs[0].data()['email'];
+        });
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    getUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,94 +79,190 @@ class _NotifikasiState extends State<Notifikasi> {
             } else {
               return ListView(
                 children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                  var harga = document['harga'];
+                  String docIdProduct = document['docIdProduct'];
+                  String orderDate = document['tanggal pesanan'];
+                  String imageFile = document['file foto'];
+                  String title = document['judul'];
+                  String price = document['harga'];
+                  int itemCount = document['jumlah'];
+                  String totalPay = document['total bayar'];
+                  String? paymentFile = document['bukti bayar'];
+                  String ordersName = document['nama lengkap'];
+                  String ordersPhoneNumber = document['nomor HP'];
+                  String ordersUsername = document['nama pengguna'];
 
                   if (widget.userId == document['userId']) {
-                    return Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0)),
-                      child: Container(
-                        height: 100.0,
-                        child: Center(
-                          child: ListTile(
-                              leading: Container(
-                                width: 90.0,
-                                height: 90.0,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                        image: NetworkImage(
-                                            "${document['file foto']}"))),
-                              ),
-                              title: Text('${document['judul']}'),
-                              subtitle: Text(
-                                  NumberFormat.currency(
-                                          locale: 'id',
-                                          symbol: 'Rp ',
-                                          decimalDigits: 0)
-                                      .format(int.parse(harga)),
-                                  style: TextStyle(
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.w500)),
-                              trailing: PopupMenuButton(
-                                itemBuilder: (_) {
-                                  return <PopupMenuEntry<String>>[]
-                                    ..add(PopupMenuItem<String>(
-                                        value: 'detail', child: Text('Detail')))
-                                    ..add(PopupMenuItem<String>(
-                                        value: 'hapus', child: Text('Hapus')));
-                                },
-                                onSelected: (String value) async {
-                                  if (value == 'detail') {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Detail(
-                                                isChecked: isChecked,
-                                                docIdProduct:
-                                                    document['docIdProduct'],
-                                                orderDate:
-                                                    document['tanggal pesanan'],
-                                                imageFile:
-                                                    document['file foto'],
-                                                title: document['judul'],
-                                                price: document['harga'],
-                                                itemCount: document['jumlah'],
-                                                totalPay:
-                                                    document['total bayar'],
-                                                paymentFile:
-                                                    document['bukti bayar'],
-                                                ordersName:
-                                                    document['nama lengkap'],
-                                                ordersPhoneNumber:
-                                                    document['nomor HP'],
-                                                ordersUsername: document[
-                                                    'nama pengguna'])));
-                                  } else if (value == 'hapus') {
-                                    showDialog(
-                                        context: context,
-                                        builder: (_) {
-                                          return AlertDialog(
-                                            title: Text('Konfirmasi'),
-                                            content: Text(
-                                                'Apa Kamu Ingin Menghapus Item Orders ${document['judul']} ?'),
-                                            actions: [
-                                              TextButton(
-                                                  onPressed: () =>
-                                                      Navigator.pop(context),
-                                                  child: Text('Tidak')),
-                                              TextButton(
-                                                  onPressed: () async {
-                                                    document.reference.delete();
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Text('Hapus'))
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Detail(
+                                    isChecked: isChecked,
+                                    docIdProduct: docIdProduct,
+                                    orderDate: orderDate,
+                                    imageFile: imageFile,
+                                    title: title,
+                                    price: price,
+                                    itemCount: itemCount,
+                                    totalPay: totalPay,
+                                    paymentFile: paymentFile,
+                                    ordersName: ordersName,
+                                    ordersPhoneNumber: ordersPhoneNumber,
+                                    ordersUsername: ordersUsername)));
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0)),
+                        child: Container(
+                          height: 150.0,
+                          padding: EdgeInsets.symmetric(horizontal: 8),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 90.0,
+                                    height: 90.0,
+                                    margin: EdgeInsets.only(top: 8),
+                                    decoration: BoxDecoration(
+                                        image: DecorationImage(
+                                            image: NetworkImage("$imageFile"))),
+                                  ),
+                                  SizedBox(
+                                    width: 12,
+                                  ),
+                                  Expanded(
+                                    child: Container(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            '$title',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                                fontSize: 16),
+                                          ),
+                                          SizedBox(
+                                            height: 16,
+                                          ),
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              children: [
+                                                Text('x$itemCount'),
+                                              ]),
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                  NumberFormat.currency(
+                                                          locale: 'id',
+                                                          symbol: 'Rp ',
+                                                          decimalDigits: 0)
+                                                      .format(
+                                                          int.parse(totalPay)),
+                                                  style: TextStyle(
+                                                      color: Colors.black54,
+                                                      fontWeight:
+                                                          FontWeight.w500)),
                                             ],
-                                          );
-                                        });
-                                  }
-                                },
-                                child: Icon(Icons.more_vert),
-                              )),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  Visibility(
+                                      visible: isVisibleDone,
+                                      child: TextButton.icon(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                            Icons.check,
+                                            color: Colors.green,
+                                            size: 16,
+                                          ),
+                                          label: Text(
+                                            'Selesai',
+                                            style:
+                                                TextStyle(color: Colors.green),
+                                          ))),
+                                  Visibility(
+                                    visible: isVisibleConfirm,
+                                    child: ElevatedButton(
+                                        onPressed: () async {
+                                          String _docIdProduct = docIdProduct;
+                                          await firestore
+                                              .collection('transaksi')
+                                              .add({
+                                            'userIdPetani': widget.userId,
+                                            'usernamePetani': username,
+                                            'namaLengkapPetani': fullname,
+                                            'nomorHpPetani': phoneNumber,
+                                            'emailPetani': email,
+                                            'docIdProduct': docIdProduct,
+                                            'orderDate': orderDate,
+                                            'imageFile': imageFile,
+                                            'title': title,
+                                            'price': price,
+                                            'itemCount': itemCount,
+                                            'totalPay': totalPay,
+                                            'paymentFile': paymentFile,
+                                            'ordersName': ordersName,
+                                            'ordersPhoneNumber': ordersPhoneNumber,
+                                            'ordersUsername': ordersUsername,
+                                          });
+                                           displaySuccess(_docIdProduct);
+                                        },
+                                        child: Center(
+                                            child: Text('Konfirmasi')),
+                                        style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty
+                                                    .all<Color>(AppColor()
+                                                        .colorChocolate))),
+                                  ),
+                                  SizedBox(width: 12),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                          await firestore
+                                              .collection('penolakan')
+                                              .add({
+                                            'userIdPetani': widget.userId,
+                                            'usernamePetani': username,
+                                            'namaLengkapPetani': fullname,
+                                            'nomorHpPetani': phoneNumber,
+                                            'emailPetani': email,
+                                            'docIdProduct': docIdProduct,
+                                            'orderDate': orderDate,
+                                            'imageFile': imageFile,
+                                            'title': title,
+                                            'price': price,
+                                            'itemCount': itemCount,
+                                            'totalPay': totalPay,
+                                            'paymentFile': paymentFile,
+                                            'ordersName': ordersName,
+                                            'ordersPhoneNumber': ordersPhoneNumber,
+                                            'ordersUsername': ordersUsername,
+                                          });
+                                    }, 
+                                    child: Center(child: Text('Tolak'),), 
+                                    style: ButtonStyle(
+                                    backgroundColor: MaterialStateProperty.all<Color>(Colors.grey)
+                                  ),)
+                                ],
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -148,5 +274,35 @@ class _NotifikasiState extends State<Notifikasi> {
             }
           }),
     );
+  }
+
+  displaySuccess(String _docIdProduct) {
+    return showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset('assets/success.svg', width: 120),
+                SizedBox(
+                  height: 12,
+                ),
+                Text('Konfirmasi Berhasil')
+              ],
+            ),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    setState(() {
+                      isVisibleDone = !isVisibleDone;
+                      isVisibleConfirm = !isVisibleConfirm;
+                    });
+                    Navigator.pop(context);
+                  },
+                  child: Center(child: Text('OK')))
+            ],
+          );
+        });
   }
 }

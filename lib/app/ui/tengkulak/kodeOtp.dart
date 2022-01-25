@@ -83,7 +83,7 @@ class _KodeOtpState extends State<KodeOtp> {
                           SizedBox(
                             height: 12.0,
                           ),
-                          Text('Masukkan Nomor HP kamu yang Aktif'),
+                          Text('Masukkan Nomor HP Anda yang Aktif'),
                           SizedBox(
                             height: 44.0,
                           ),

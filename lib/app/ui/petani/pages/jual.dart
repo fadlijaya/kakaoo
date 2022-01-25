@@ -201,7 +201,7 @@ class _JualState extends State<Jual> {
         });
   }
 
-  int _itemCount = 0;
+  int _itemCount = 5;
 
   widgetFile() {
     return Container(
@@ -223,7 +223,7 @@ class _JualState extends State<Jual> {
                   SizedBox(
                     width: 4,
                   ),
-                  Text('Lokasi kamu',
+                  Text('Lokasi Anda',
                       style: TextStyle(
                           color: Colors.black54, fontWeight: FontWeight.w500)),
                   SizedBox(
@@ -317,7 +317,7 @@ class _JualState extends State<Jual> {
                 Container(
                   decoration:
                       BoxDecoration(border: Border.all(color: Colors.black12)),
-                  child: _itemCount != 0
+                  child: _itemCount > 5
                       ? IconButton(
                           constraints:
                               BoxConstraints(minHeight: 24.0, minWidth: 24.0),
@@ -343,7 +343,14 @@ class _JualState extends State<Jual> {
                           BoxConstraints(minHeight: 24.0, minWidth: 24.0),
                       onPressed: () => setState(() => _itemCount++),
                       icon: Icon(Icons.add, color: Colors.black54)),
-                )
+                ),
+              ],
+            ),
+            SizedBox(height: 8,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text('Minimun Stok 5 Kilogram/Liter', style: TextStyle(color: Colors.black54, fontSize: 12)),
               ],
             ),
             SizedBox(

@@ -82,7 +82,7 @@ class _UserLoginState extends State<UserLogin> {
                                 ));
                           },
                           child: Text(
-                            'Masuk sebagai Tengkulak',
+                            'Masuk sebagai Pengepul',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),

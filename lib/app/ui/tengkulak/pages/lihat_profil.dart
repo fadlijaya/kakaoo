@@ -1,15 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 
 class LihatProfil extends StatefulWidget {
   final String fullname;
   final String location;
+  final GeoPoint coordinate;
   final String phoneNumber;
 
   const LihatProfil({
     Key? key,
     required this.fullname,
     required this.location,
+    required this.coordinate,
     required this.phoneNumber,
   }) : super(key: key);
 
@@ -86,7 +89,9 @@ class _LihatProfilState extends State<LihatProfil> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(widget.location,
-                            style: TextStyle(color: Colors.black54))
+                            style: TextStyle(color: Colors.black54)),
+                        SizedBox(height: 4),
+                        Text('Lat: ${widget.coordinate.latitude}, Long: ${widget.coordinate.longitude}', style: TextStyle(color: Colors.black54),)
                       ],
                     ),
                   )

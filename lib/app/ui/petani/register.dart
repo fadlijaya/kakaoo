@@ -27,6 +27,7 @@ class _RegisterState extends State<Register> {
 
   TextEditingController _userName = TextEditingController();
   TextEditingController _username = TextEditingController();
+  TextEditingController _email = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmPassword = TextEditingController();
 
@@ -123,6 +124,21 @@ class _RegisterState extends State<Register> {
                               },
                             ),
                           ),
+                          Text(
+                            'opsional',
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: paddingDefault),
+                            child: TextFormField(
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              controller: _email,
+                              onEditingComplete: () => node.nextFocus(),
+                              decoration: InputDecoration(labelText: 'Email'),
+                            ),
+                          ),
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: paddingDefault),
@@ -192,12 +208,13 @@ class _RegisterState extends State<Register> {
                         onPressed: () async {
                           final String fullname = _userName.text.trim();
                           final String username = _username.text.trim();
-                          final String email = '$username@gmail.com';
+                          final String email = _email.text.trim();
                           final String password = _password.text.trim();
                           final String phoneNumber = widget.phoneNumber;
                           try {
                             if (email.isEmpty) {
-                              print('Email is empty');
+                              // ignore: unnecessary_statements
+                              '$username@gmail.com';
                             } else if (password.isEmpty) {
                               print('Password is empty');
                             } else {

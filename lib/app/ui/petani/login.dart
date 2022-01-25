@@ -1,12 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/petani/kodeOtp.dart';
 import 'package:kakaoo/app/ui/petani/pages/home.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
-import 'package:provider/provider.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -199,6 +197,7 @@ class _LoginPetaniState extends State<LoginPetani> {
           UserCredential user = await auth.signInWithEmailAndPassword(
               email: email, password: password);
 
+          // ignore: unnecessary_null_comparison
           if (user != null) {
             Navigator.pushAndRemoveUntil(
                 context,

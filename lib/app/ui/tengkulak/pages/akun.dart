@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kakaoo/app/services/auth_services.dart';
 import 'package:kakaoo/app/ui/constants.dart';
 import 'package:kakaoo/app/ui/tengkulak/pages/edit_profil.dart';
+import 'package:kakaoo/app/ui/tengkulak/pages/notifikasi.dart';
 import 'package:kakaoo/app/ui/user_login.dart';
 // ignore: implementation_imports
 import 'package:provider/src/provider.dart';
@@ -72,6 +73,7 @@ class _AkunState extends State<Akun> {
             height: 4.0,
           ),
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               IconButton(
                   onPressed: () {
@@ -81,6 +83,7 @@ class _AkunState extends State<Akun> {
                     Icons.close,
                     color: Colors.white,
                   )),
+              IconButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Notifikasi(username: username))), icon: Icon(Icons.notifications), color: Colors.white,)
             ],
           ),
           Center(
@@ -202,7 +205,7 @@ class _AkunState extends State<Akun> {
                     width: 12.0,
                   ),
                   Text(
-                    'Keluar',
+                    'Log out',
                     style: TextStyle(color: Colors.red),
                   )
                 ],
@@ -246,3 +249,4 @@ class _AkunState extends State<Akun> {
         MaterialPageRoute(builder: (context) => UserLogin()), (route) => false);
   }
 }
+

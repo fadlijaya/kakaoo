@@ -172,8 +172,7 @@ class _EditProfilState extends State<EditProfil> {
     });
 
     if (widget.isEdit) {
-      DocumentReference docRefUsers =
-          firestore.collection('users').doc(widget.documentId);
+      DocumentReference docRefUsers = firestore.collection('users').doc(widget.documentId);
 
       firestore.runTransaction((transaction) async {
         DocumentSnapshot task = await transaction.get(docRefUsers);
@@ -191,8 +190,7 @@ class _EditProfilState extends State<EditProfil> {
         }
       });
 
-      DocumentReference docRefTengkulak =
-          firestore.collection('tengkulak').doc(widget.documentId);
+      DocumentReference docRefTengkulak = firestore.collection('tengkulak').doc(widget.documentId);
 
       firestore.runTransaction((transaction) async {
         DocumentSnapshot task = await transaction.get(docRefTengkulak);

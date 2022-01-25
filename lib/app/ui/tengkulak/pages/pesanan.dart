@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:kakaoo/app/ui/constants.dart';
+import 'package:kakaoo/app/ui/tengkulak/pages/home.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -22,6 +22,7 @@ class Pesanan extends StatefulWidget {
   final String imageFile;
   final String title;
   final String price;
+  final int stock;
   final int itemCount;
 
   const Pesanan(
@@ -31,6 +32,7 @@ class Pesanan extends StatefulWidget {
       required this.imageFile,
       required this.title,
       required this.price,
+      required this.stock,
       required this.itemCount})
       : super(key: key);
 
@@ -72,20 +74,13 @@ class _PesananState extends State<Pesanan> {
     DateTime now = DateTime.now();
     String formatedDate = DateFormat('dd-MM-yyyy - kk:mm').format(now);
     var totalPay = int.parse(widget.price) * widget.itemCount;
+    // ignore: non_constant_identifier_names
+    var sisa_stock = widget.stock - widget.itemCount;
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColor().colorCreamy,
-        title: Text(
-          title,
-          style: TextStyle(color: AppColor().colorChocolate),
-        ),
-        leading: GestureDetector(
-            onTap: () => Navigator.pop(context),
-            child: Icon(
-              Icons.arrow_back,
-              color: AppColor().colorChocolate,
-            )),
+        title: Text(title),
+        centerTitle: true,
       ),
       body: Container(
           padding: EdgeInsets.all(paddingDefault),
@@ -269,7 +264,7 @@ class _PesananState extends State<Pesanan> {
                   right: 0,
                   child: Container(
                     decoration: BoxDecoration(
-                        color: AppColor().colorCreamy,
+                        color: AppColor().colorChocolate,
                         borderRadius: BorderRadius.circular(8.0)),
                     // ignore: deprecated_member_use
                     child: FlatButton(
@@ -289,10 +284,43 @@ class _PesananState extends State<Pesanan> {
                               'total bayar': totalPay.toString(),
                               'bukti bayar': _imageUrl
                             });
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => NotifSuccess()));
+                            DocumentReference docRefPenjualan = firestore
+                                .collection('penjualan')
+                                .doc(widget.docIdProduct);
+
+                            firestore.runTransaction((transaction) async {
+                              DocumentSnapshot task =
+                                  await transaction.get(docRefPenjualan);
+                              if (task.exists) {
+                                // ignore: await_only_futures
+                                await transaction.update(
+                                  docRefPenjualan,
+                                  <String, dynamic>{
+                                    'stok': sisa_stock,
+                                  },
+                                );
+                              }
+                            });
+                            DocumentReference docRefPetani = firestore
+                                .collection('petani')
+                                .doc(widget.userIdPetani)
+                                .collection('penjualan')
+                                .doc(widget.docIdProduct);
+
+                            firestore.runTransaction((transaction) async {
+                              DocumentSnapshot task =
+                                  await transaction.get(docRefPetani);
+                              if (task.exists) {
+                                // ignore: await_only_futures
+                                await transaction.update(
+                                  docRefPetani,
+                                  <String, dynamic>{
+                                    'stok': sisa_stock, 
+                                  },
+                                );
+                              }
+                            });
+                            displaySuccess();
                           }
                         },
                         child: Row(
@@ -300,7 +328,7 @@ class _PesananState extends State<Pesanan> {
                           children: [
                             Icon(
                               Icons.check,
-                              color: AppColor().colorChocolate,
+                              color: Colors.white,
                               size: 16.0,
                             ),
                             SizedBox(
@@ -309,7 +337,9 @@ class _PesananState extends State<Pesanan> {
                             Text(
                               "Buat Pesanan",
                               style: TextStyle(
-                                  fontWeight: FontWeight.w500, fontSize: 16.0),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0,
+                                  color: Colors.white),
                             )
                           ],
                         )),
@@ -362,51 +392,43 @@ class _PesananState extends State<Pesanan> {
       print('Tidak dapat ditampilkan');
     }
   }
-}
 
-class NotifSuccess extends StatefulWidget {
-  const NotifSuccess({Key? key}) : super(key: key);
-
-  @override
-  _NotifSuccessState createState() => _NotifSuccessState();
-}
-
-class _NotifSuccessState extends State<NotifSuccess> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-          backgroundColor: AppColor().colorCreamy,
-          title: Text(
-            'Transaksi',
-            style: TextStyle(color: AppColor().colorChocolate),
-          ),
-          leading: IconButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              icon: Icon(
-                Icons.close,
-                color: AppColor().colorChocolate,
-              ))),
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(
-              'assets/success.svg',
-              width: 240,
+  displaySuccess() {
+    return showDialog(
+        context: context,
+        builder: (_) {
+          return AlertDialog(
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.check,
+                  size: 120,
+                  color: Colors.green,
+                ),
+                SizedBox(
+                  height: 12,
+                ),
+                Text('Pesanan Terkirim')
+              ],
             ),
-            SizedBox(
-              height: 24,
-            ),
-            Text(
-              'Pembayaran Berhasil',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-            ),
-          ],
-        ),
-      ),
-    );
+            actions: [
+              TextButton(
+                  onPressed: () async {
+                    Navigator.pop(context);
+                    await Future.delayed(Duration(milliseconds: 100), () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (BuildContext context) => HomeTengkulak(),
+                        ),
+                        (route) => false,
+                      );
+                    });
+                  },
+                  child: Center(child: Text('OK')))
+            ],
+          );
+        });
   }
 }

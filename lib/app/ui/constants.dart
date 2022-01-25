@@ -9,7 +9,7 @@ const paddingDefault = 16.0;
 
 class TitleText {
   final String titleUserLogin = 'Selamat Datang di Kakaoo';
-  final String descUserLogin = 'Aplikasi dalam membantu Petani\nmenjual Biji Kakao kepada Tengkulak';
+  final String descUserLogin = 'Aplikasi dalam membantu Petani\nmenjual Biji Kakao kepada Pengepul';
 }
 
 class TextDetailSliders1 {

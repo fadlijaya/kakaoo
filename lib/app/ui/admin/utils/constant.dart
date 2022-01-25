@@ -8,6 +8,7 @@ class AppColorAdmin {
 
   final card1 = const Color(0xFFFFBF37);
   final card2 = const Color(0xFF00CECE);
-  final card3 = const Color(0xFFFB777A);
+  final card3 = const Color(0xFF00E676);
   final card4 = const Color(0xFFA5A5A5);
+  final card5 = const Color(0xFFFB777A);
 }

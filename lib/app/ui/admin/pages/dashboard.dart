@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:kakaoo/app/ui/admin/pages/reject.dart';
 import 'package:kakaoo/app/ui/admin/pages/transaksi.dart';
 import 'package:kakaoo/app/ui/admin/pages/orders.dart';
 import 'package:kakaoo/app/ui/admin/pages/product.dart';
@@ -27,10 +28,11 @@ final Stream<QuerySnapshot> product =
 final Stream<QuerySnapshot> orders =
     FirebaseFirestore.instance.collection('pesanan').snapshots();
 final Stream<QuerySnapshot> transaksi =
-    FirebaseFirestore.instance.collection('pesanan').snapshots();
-final Stream<QuerySnapshot> users = FirebaseFirestore.instance
-    .collection('users')
-    .snapshots();
+    FirebaseFirestore.instance.collection('transaksi').snapshots();
+final Stream<QuerySnapshot> users =
+    FirebaseFirestore.instance.collection('users').snapshots();
+final Stream<QuerySnapshot> reject =
+    FirebaseFirestore.instance.collection('penolakan').snapshots();
 
 class Admin extends StatefulWidget {
   @override
@@ -47,17 +49,13 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
   }
 
   Future getUser() async {
-    await firestore
-          .collection('admin')
-          .where('userId')
-          .get()
-          .then((result) {
-        if (result.docs.length > 0) {
-          setState(() {
-            userName = result.docs[0].data()['nama lengkap'];
-          });
-        }
-      });
+    await firestore.collection('admin').where('userId').get().then((result) {
+      if (result.docs.length > 0) {
+        setState(() {
+          userName = result.docs[0].data()['nama lengkap'];
+        });
+      }
+    });
   }
 
   @override
@@ -155,7 +153,7 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
         margin: EdgeInsets.only(top: 120),
         child: GridView.count(
           crossAxisCount: 2,
-          children: [cardProduct(), cardOrders(), cardTransaksi(), cardUsers()],
+          children: [cardProduct(), cardOrders(), cardTransaksi(), cardUsers(), cardReject()],
         ));
   }
 
@@ -289,8 +287,8 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
 
           return GestureDetector(
             onTap: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Transaksi()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => Transaksi()));
             },
             child: Card(
               color: AppColorAdmin().card3,
@@ -345,19 +343,19 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
         }
 
         var docUsers = snapshot.data!.docs.length;
-        
+
         return GestureDetector(
           onTap: () {
-             Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => Users()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Users()));
           },
           child: Card(
             color: AppColorAdmin().card4,
-            margin:
-                EdgeInsets.only(left: 10.0, right: 5.0, top: 20.0, bottom: 20.0),
+            margin: EdgeInsets.only(
+                left: 10.0, right: 5.0, top: 20.0, bottom: 20.0),
             elevation: 10.0,
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
             child: Column(
               children: [
                 Row(
@@ -365,7 +363,8 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
                     Padding(
                       padding: EdgeInsets.only(
                           top: paddingDefault, left: paddingDefault),
-                      child: Icon(Icons.people, size: 40.0, color: Colors.white),
+                      child:
+                          Icon(Icons.people, size: 40.0, color: Colors.white),
                     ),
                   ],
                 ),
@@ -381,6 +380,64 @@ class _AdminState extends State<Admin> with SingleTickerProviderStateMixin {
                   height: 8,
                 ),
                 Text('Pengguna',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold))
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  cardReject() {
+    return StreamBuilder(
+      stream: reject,
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return CircularProgressIndicator();
+        } else if (snapshot.hasError) {
+          return Text('Error!');
+        }
+
+        var docUsers = snapshot.data!.docs.length;
+
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => Reject()));
+          },
+          child: Card(
+            color: AppColorAdmin().card5,
+            margin: EdgeInsets.only(
+                left: 10.0, right: 5.0, top: 20.0, bottom: 20.0),
+            elevation: 10.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0)),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(
+                          top: paddingDefault, left: paddingDefault),
+                      child:
+                          Icon(Icons.close, size: 40.0, color: Colors.white),
+                    ),
+                  ],
+                ),
+                Text(
+                  '${docUsers.toString()}',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24.0,
+                      fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                Text('Penolakan',
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold))
               ],
