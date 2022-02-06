@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:kakaoo/app/utils/constants.dart';
-import 'package:kakaoo/app/view/petani/pages/jual/map_pick.dart';
 import 'package:kakaoo/app/view/petani/pages/beranda/home.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -18,6 +17,8 @@ var fullname;
 var username;
 var phoneNumber;
 var userId;
+var location;
+GeoPoint? coordinate;
 
 var _saleDate = DateFormat('dd-MM-yyyy').format(DateTime.now());
 
@@ -31,13 +32,10 @@ class Jual extends StatefulWidget {
   final String desc;
   final String saleDate;
   final String? imageFile;
-  final String location;
-  final GeoPoint coordinate;
 
   const Jual({
     Key? key,
     required this.isEdit,
-    required this.coordinate,
     this.documentId = '',
     this.unit = '',
     this.price = '',
@@ -46,7 +44,6 @@ class Jual extends StatefulWidget {
     this.desc = '',
     this.saleDate = '',
     this.imageFile = '',
-    this.location = '',
   }) : super(key: key);
 
   @override
@@ -95,16 +92,12 @@ class _JualState extends State<Jual> {
   }
 
   var _satuan;
-  var _location;
-  double _coordinateLat = 0.0;
-  double _coordinateLon = 0.0;
   List<String> _listSatuan = ['Kilogram', 'Liter'];
 
   @override
   void initState() {
     super.initState();
     if (widget.isEdit) {
-      _location = widget.location;
       _title.text = widget.title;
       _desc.text = widget.desc;
       _price.text = widget.price;
@@ -129,6 +122,8 @@ class _JualState extends State<Jual> {
           username = result.docs[0].data()['nama pengguna'];
           phoneNumber = result.docs[0].data()['nomor HP'];
           userId = result.docs[0].data()['userId'];
+          location = result.docs[0].data()['lokasi'];
+          coordinate = result.docs[0].data()['koordinat'];
         });
       }
     });
@@ -213,42 +208,6 @@ class _JualState extends State<Jual> {
         key: _formKey,
         child: ListView(
           children: [
-            GestureDetector(
-              onTap: () => {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => MapPick()))
-              },
-              child: Row(
-                children: [
-                  Icon(Icons.map_outlined, size: 16, color: Colors.grey),
-                  SizedBox(
-                    width: 4,
-                  ),
-                  Text('Lokasi Anda',
-                      style: TextStyle(
-                          color: Colors.black54, fontWeight: FontWeight.w500)),
-                  SizedBox(
-                    width: 8,
-                  ),
-                  Icon(
-                    Icons.arrow_drop_down,
-                    color: AppColor().colorChocolate,
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(
-              height: 4,
-            ),
-            // ignore: unnecessary_null_comparison
-            widget.location != null
-                ? Text(
-                    widget.location,
-                    style: TextStyle(
-                      color: AppColor().colorChocolate,
-                    ),
-                  )
-                : Text(_location),
             SizedBox(
               height: 20,
             ),
@@ -384,16 +343,16 @@ class _JualState extends State<Jual> {
                     child: Text(_itemCount2.toString(),
                         style: TextStyle(fontWeight: FontWeight.w500))),
                 _itemCount2 > _itemCount
-                ? Container(
-                  decoration:
-                      BoxDecoration(border: Border.all(color: Colors.black12)),
-                  child: IconButton(
-                      constraints:
-                          BoxConstraints(minHeight: 24.0, minWidth: 24.0),
-                      onPressed: () => setState(() => _itemCount2--),
-                      icon: Icon(Icons.remove, color: Colors.black54)),
-                )
-                : Container()
+                    ? Container(
+                        decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black12)),
+                        child: IconButton(
+                            constraints:
+                                BoxConstraints(minHeight: 24.0, minWidth: 24.0),
+                            onPressed: () => setState(() => _itemCount2--),
+                            icon: Icon(Icons.remove, color: Colors.black54)),
+                      )
+                    : Container()
               ],
             ),
             SizedBox(
@@ -465,15 +424,12 @@ class _JualState extends State<Jual> {
                         'jenis pengguna': typeUsers,
                         'nama lengkap': fullname,
                         'nomor HP': phoneNumber,
-                        'alamat': _location.toString(),
                         'stok': _itemCount,
                         'minimum pembelian': _itemCount2,
                         'satuan': _satuan.toString(),
                         'harga': _price.text,
                         'judul': _title.text,
                         'deskripsi': _desc.text,
-                        'posisi kordinat':
-                            GeoPoint(_coordinateLat, _coordinateLon),
                         'tanggal jual': _saleDate.toString(),
                         'file foto': _imageUrl
                       },
@@ -494,15 +450,12 @@ class _JualState extends State<Jual> {
                         'jenis pengguna': typeUsers,
                         'nama lengkap': fullname,
                         'nomor HP': phoneNumber,
-                        'alamat': _location.toString(),
                         'stok': _itemCount,
                         'minimum pembelian': _itemCount2,
                         'satuan': _satuan.toString(),
                         'harga': _price.text,
                         'judul': _title.text,
                         'deskripsi': _desc.text,
-                        'posisi kordinat':
-                            GeoPoint(_coordinateLat, _coordinateLon),
                         'tanggal jual': _saleDate.toString(),
                         'file foto': _imageUrl
                       },
@@ -521,14 +474,14 @@ class _JualState extends State<Jual> {
                       'jenis pengguna': typeUsers,
                       'nama lengkap': fullname,
                       'nomor HP': phoneNumber,
-                      'alamat': widget.location,
+                      'alamat': location,
                       'stok': _itemCount,
                       'minimum pembelian': _itemCount2,
                       'satuan': _satuan.toString(),
                       'harga': _price.text,
                       'judul': _title.text,
                       'deskripsi': _desc.text,
-                      'posisi kordinat': widget.coordinate,
+                      'posisi kordinat': coordinate,
                       'tanggal jual': _saleDate.toString(),
                       'file foto': _imageUrl
                     });
@@ -541,14 +494,14 @@ class _JualState extends State<Jual> {
                       'jenis pengguna': typeUsers,
                       'nama lengkap': fullname,
                       'nomor HP': phoneNumber,
-                      'alamat': widget.location,
+                      'alamat': location,
                       'stok': _itemCount,
                       'minimum pembelian': _itemCount2,
                       'satuan': _satuan.toString(),
                       'harga': _price.text,
                       'judul': _title.text,
                       'deskripsi': _desc.text,
-                      'posisi kordinat': widget.coordinate,
+                      'posisi kordinat': coordinate,
                       'tanggal jual': _saleDate.toString(),
                       'file foto': _imageUrl
                     }).then((value) => {
@@ -567,4 +520,4 @@ class _JualState extends State<Jual> {
           )),
     );
   }
-} 
+}

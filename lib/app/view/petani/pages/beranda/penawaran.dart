@@ -75,7 +75,7 @@ class _PenawaranState extends State<Penawaran> {
               return ListView(
                   children:
                       snapshot.data!.docs.map((DocumentSnapshot document) {
-                String docIdProduct = document['docIdProduct'];
+                //String docIdProduct = document['docIdProduct'];
                 String price = document['harga'];
                 String priceOffer = document['penawaran harga'];
                 String imageFile = document['imageFile'];

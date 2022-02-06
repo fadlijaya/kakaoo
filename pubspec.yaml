@@ -14,6 +14,7 @@ dependencies:
     sdk: flutter
   intl: ^0.17.0
   geolocator: ^7.0.3
+  http: ^0.13.4
 
   splash_screen_view: ^3.0.0
   firebase_core: ^1.1.1
@@ -52,3 +53,4 @@ flutter:
     - assets/logo.png
     - assets/slider1.png
     - assets/slider2.png
+    - assets/google-maps.png

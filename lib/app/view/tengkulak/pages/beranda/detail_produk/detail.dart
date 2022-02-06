@@ -87,12 +87,17 @@ class _DetailState extends State<Detail> {
                                 Container(
                                   width: double.infinity,
                                   height: 200,
-                                  child: ClipRRect(
+                                  // ignore: unnecessary_null_comparison
+                                  child: imageFile != null 
+                                  ? ClipRRect(
                                     child: Image.network(
                                       '$imageFile',
                                       fit: BoxFit.cover,
                                     ),
-                                  ),
+                                  )
+                                  : Center(
+                                    child: Text('Tidak Dapat Memuat Gambar'),
+                                  )
                                 ),
                                 Positioned(
                                     top: 9,

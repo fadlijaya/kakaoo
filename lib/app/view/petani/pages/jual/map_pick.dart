@@ -6,7 +6,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:kakaoo/app/utils/constants.dart';
-import 'package:kakaoo/app/view/petani/pages/jual/jual.dart';
+import 'package:kakaoo/app/view/petani/pages/register/lokasi.dart';
 import 'package:map_picker/map_picker.dart';
 
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,8 +14,11 @@ import 'package:flutter_svg/flutter_svg.dart';
 const kGoogleApiKey = "AIzaSyAISwXwMy9RIBS6qnrxkC3fPRL3hfSrJSg";
 
 class MapPick extends StatefulWidget {
+  final String phoneNumber;
+
   const MapPick({
     Key? key,
+    required this.phoneNumber,
   }) : super(key: key);
 
   @override
@@ -29,6 +32,7 @@ class _MapPickState extends State<MapPick> {
   late Position _currentPosition;
   // ignore: unused_field
   var _currentAddress;
+  String? _textArea;
 
   TextEditingController _textEditingController = TextEditingController();
 
@@ -126,6 +130,7 @@ class _MapPickState extends State<MapPick> {
                 // update the ui with the address
                 _textEditingController.text =
                     '${placemarks.first.street}, ${placemarks.first.subLocality}, ${placemarks.first.locality}, ${placemarks.first.subAdministrativeArea}';
+                _textArea = '${placemarks.first.subAdministrativeArea}';
               },
             ),
           ),
@@ -213,15 +218,29 @@ class _MapPickState extends State<MapPick> {
                   SizedBox(height: 12),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Lokasi(
+                                     coordinate: GeoPoint(
+                                        cameraPosition.target.latitude,
+                                        cameraPosition.target.longitude),
+                                    location: _textEditingController.text,
+                                    phoneNumber: widget.phoneNumber,
+                                    currentArea: _textArea.toString()
+                                  )),
+                          (route) => false);
+                      /*Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => Jual(
                                     isEdit: false,
                                     location: _textEditingController.text,
                                     coordinate: GeoPoint(cameraPosition.target.latitude, cameraPosition.target.longitude),
-                                  )));
-                      print("Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
+                                  )));*/
+                      print(
+                          "Location ${cameraPosition.target.latitude} ${cameraPosition.target.longitude}");
                       print("Address: ${_textEditingController.text}");
                     },
                     child: Container(
@@ -233,7 +252,7 @@ class _MapPickState extends State<MapPick> {
                       ),
                       child: Center(
                         child: const Text(
-                          "Submit",
+                          "Pilih Lokasi",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontStyle: FontStyle.normal,

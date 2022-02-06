@@ -176,8 +176,7 @@ class _KakaoState extends State<Kakao> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => DetailKakao(
-                                              userName:
-                                                  document['nama lengkap'],
+                                              userName: document['nama lengkap'],
                                               phoneNumber: document['nomor HP'],
                                               location: document['alamat'],
                                               price: document['harga'],
@@ -227,7 +226,7 @@ class _KakaoState extends State<Kakao> {
                                                       height: 120,
                                                       child: Center(
                                                           child: Text(
-                                                        'Tidak Dapat Memuat Gambar, Coba lagi',
+                                                        'Tidak Dapat Memuat Gambar',
                                                         style: TextStyle(
                                                             fontSize: 12,
                                                             color: Colors.grey),
@@ -269,11 +268,6 @@ class _KakaoState extends State<Kakao> {
                                                                   document
                                                                       .reference
                                                                       .id,
-                                                              coordinate: document[
-                                                                  'posisi kordinat'],
-                                                              location:
-                                                                  document[
-                                                                      'alamat'],
                                                               unit: document[
                                                                   'satuan'],
                                                               price: document[

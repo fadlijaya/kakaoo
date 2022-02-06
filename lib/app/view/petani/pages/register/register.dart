@@ -12,8 +12,23 @@ final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
 class Register extends StatefulWidget {
   final String phoneNumber;
+  final String location;
+  final GeoPoint coordinate;
+  final String kabupaten;
+  final String kecamatan;
+  final String kelurahan;
+  final String address;
 
-  const Register({Key? key, required this.phoneNumber}) : super(key: key);
+  const Register(
+      {Key? key,
+      required this.phoneNumber,
+      required this.location,
+      required this.coordinate,
+      required this.kabupaten,
+      required this.kecamatan,
+      required this.kelurahan,
+      required this.address})
+      : super(key: key);
 
   @override
   _RegisterState createState() => _RegisterState();
@@ -130,12 +145,16 @@ class _RegisterState extends State<Register> {
                               decoration: InputDecoration(labelText: 'Email'),
                             ),
                           ),
-                          SizedBox(height: 4,),
-                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: paddingDefault),
+                          SizedBox(
+                            height: 4,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: paddingDefault),
                             child: Text(
                               '*Email bersifat Opsional',
-                              style: TextStyle(fontSize: 12, color: Colors.black54),
+                              style: TextStyle(
+                                  fontSize: 12, color: Colors.black54),
                             ),
                           ),
                           Padding(
@@ -162,7 +181,7 @@ class _RegisterState extends State<Register> {
                             padding:
                                 const EdgeInsets.only(left: paddingDefault),
                             child: Text(
-                              'Minimal 7 Karakter',
+                              '*Minimal 7 Karakter',
                               style:
                                   TextStyle(fontSize: 12.0, color: Colors.grey),
                             ),
@@ -207,13 +226,23 @@ class _RegisterState extends State<Register> {
                         onPressed: () async {
                           final String fullname = _userName.text.trim();
                           final String username = _username.text.trim();
-                          final String email = _email.text.trim();
+                          final String email = _email.text.trim().isEmpty
+                              ? '$username@gmail.com'
+                              : _email.text.trim();
                           final String password = _password.text.trim();
                           final String phoneNumber = widget.phoneNumber;
+                          final String location = widget.location;
+                          final GeoPoint coordinate = GeoPoint(
+                              widget.coordinate.latitude,
+                              widget.coordinate.longitude);
+                          final String kabupaten = widget.kabupaten;
+                          final String kecamatan = widget.kecamatan;
+                          final String kelurahan = widget.kelurahan;
+                          final String address = widget.address;
+
                           try {
                             if (email.isEmpty) {
-                              // ignore: unnecessary_statements
-                              '$username@gmail.com';
+                              print('Email is empty');
                             } else if (password.isEmpty) {
                               print('Password is empty');
                             } else {
@@ -234,6 +263,12 @@ class _RegisterState extends State<Register> {
                                   'password': password,
                                   'nomor HP': phoneNumber,
                                   'jenis pengguna': title,
+                                  'lokasi': location,
+                                  'koordinat': coordinate,
+                                  'kabupaten': kabupaten,
+                                  'kecamatan': kecamatan,
+                                  'kelurahan': kelurahan,
+                                  'alamat': address,
                                 });
 
                                 await firestore
@@ -247,6 +282,12 @@ class _RegisterState extends State<Register> {
                                   'password': password,
                                   'nomor HP': phoneNumber,
                                   'jenis pengguna': title,
+                                  'lokasi': location,
+                                  'koordinat': coordinate,
+                                  'kabupaten': kabupaten,
+                                  'kecamatan': kecamatan,
+                                  'kelurahan': kelurahan,
+                                  'alamat': address,
                                 });
 
                                 successDialog();

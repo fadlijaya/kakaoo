@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kakaoo/app/utils/constants.dart';
 import 'package:kakaoo/app/view/petani/pages/register/lokasi.dart';
-import 'package:kakaoo/app/view/petani/pages/register/register.dart';
 
 final FirebaseAuth auth = FirebaseAuth.instance;
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -244,7 +243,7 @@ class _KodeOtpState extends State<KodeOtp> {
                                                     context,
                                                     MaterialPageRoute(
                                                         builder: (context) =>
-                                                            Lokasi(phoneNumber: _phoneNumber.text)),
+                                                            Lokasi(phoneNumber: _phoneNumber.text, coordinate: GeoPoint(0.0, 0.0), location: '', currentArea: '',)),
                                                     (route) => false)
                                               })
                                           // ignore: invalid_return_type_for_catch_error
@@ -353,7 +352,7 @@ class _KodeOtpState extends State<KodeOtp> {
                   context,
                   MaterialPageRoute(
                     builder: (BuildContext context) =>
-                        Lokasi(phoneNumber: _phoneNumber.text)
+                        Lokasi(phoneNumber: _phoneNumber.text, coordinate: GeoPoint(0.0, 0.0), location: '', currentArea: '',)
                   ),
                   (route) => false,
                 ));
